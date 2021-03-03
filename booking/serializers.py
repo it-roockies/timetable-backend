@@ -22,13 +22,15 @@ class BookingSerializer(serializers.ModelSerializer):
     """A serializer that helps us to serializer booking data """
     class Meta:
         model = models.Booking
-        fields = ['starts_at',
-                  'ends_at',
-                  'group',
-                  'room',
-                  'tutor',
-                  'module'
-                  ]
+        fields = [
+            'id',
+            'starts_at',
+            'ends_at',
+            'group',
+            'room',
+            'tutor',
+            'module'
+        ]
 
 class TutorSerializer(serializers.ModelSerializer):
     """Interacts with Tutor data"""

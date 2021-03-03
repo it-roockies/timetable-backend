@@ -1,5 +1,6 @@
 from django.urls import path, include
 from . import views
+from rest_framework.authtoken.views import obtain_auth_token
 
 
 urlpatterns = [
@@ -9,8 +10,7 @@ urlpatterns = [
     path('group/', views.GroupApiView.as_view(), name='group'),
     path('module/', views.ModuleApiView.as_view(), name='module'),
     path('room/', views.RoomApiView.as_view(), name='room'),
-    # login
-    path('auth/', include('rest_framework.urls'))
+    path('token/', obtain_auth_token),
 ]
 
 
