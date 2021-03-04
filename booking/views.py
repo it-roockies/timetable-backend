@@ -25,10 +25,15 @@ class BookingApiView(APIView):
 
     def get(self, request):
         """returns all booking details """
+
         bookings = models.Booking.objects.all()
+        dic_params = {}
+        for k, v in (dict(request.GET)).items():  # getting params as a dictionary
+            if k == 'starts_at':
+                v == v[0].split('T')
+            dic_params[k] = v[0]
+        bookings = bookings.filter(**dic_params)  # filtering objects for getting a particular one
         serializer = serializers.BookingSerializer(bookings, many=True)
-        print(serializer.data)
-        print(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TutorApiView(APIView):
