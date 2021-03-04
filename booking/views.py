@@ -29,7 +29,7 @@ class BookingApiView(APIView):
         bookings = models.Booking.objects.all()
         dic_params = {}
         for k, v in (dict(request.GET)).items():  # getting params as a dictionary
-            if k == 'starts_at':
+            if k == 'starts_at' or 'ends_at':
                 v == v[0].split('T')
             dic_params[k] = v[0]
         bookings = bookings.filter(**dic_params)  # filtering objects for getting a particular one
