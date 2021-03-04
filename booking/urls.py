@@ -11,6 +11,7 @@ urlpatterns = [
     path('module/', views.ModuleApiView.as_view(), name='module'),
     path('room/', views.RoomApiView.as_view(), name='room'),
     path('token/', obtain_auth_token),
+    path('timetable-data/', views.TimeTableDataApiView.as_view(), name='timetable-data')
 ]
 
 
