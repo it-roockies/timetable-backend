@@ -24,36 +24,36 @@ class BookingSerializer(serializers.ModelSerializer):
         model = models.Booking
         fields = [
             'id',
-            'starts_at',
-            'ends_at',
+            'date',
+            'period',
             'group',
-            'room',
-            'tutor',
-            'module'
+            'classroom',
+            'teacher',
+            'subject'
         ]
 
-class TutorSerializer(serializers.ModelSerializer):
+class TeacherSerializer(serializers.ModelSerializer):
     """Interacts with Tutor data"""
     class Meta:
-        model = models.Tutor
+        model = models.Teacher
         fields = [
-            'first_name',
-            'last_name',
-            'module'
+            'firstname',
+            'lastname',
+            'subject'
         ]
 
-class RoomSerializer(serializers.ModelSerializer):
+class ClassroomSerializer(serializers.ModelSerializer):
     """Interacts with Room data"""
     class Meta:
-        model = models.Room
+        model = models.Classroom
         fields = [
             'title',
         ]
 
-class ModuleSerializer(serializers.ModelSerializer):
+class SubjectSerializer(serializers.ModelSerializer):
     """Interacts with Module data"""
     class Meta:
-        model = models.Module
+        model = models.Subject
         fields = [
             'name',
         ]

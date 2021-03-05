@@ -26,12 +26,12 @@ class BookingApiViewSet(ReadOnlyModelViewSet):
     serializer_class = serializers.BookingSerializer
 
 
-class TutorApiView(APIView):
+class TeacherApiView(APIView):
     """Interacts with tutors"""
     def get(self, request):
         """returns all existing tutors in our database"""
-        tutors = models.Tutor.objects.all()
-        serializer = serializers.TutorSerializer(tutors, many=True)
+        tutors = models.Teacher.objects.all()
+        serializer = serializers.TeacherSerializer(tutors, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class GroupApiView(APIView):
@@ -42,20 +42,20 @@ class GroupApiView(APIView):
         serializer = serializers.GroupSerializer(groups, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class RoomApiView(APIView):
+class ClassroomApiView(APIView):
     """Interacts with rooms"""
     def get(self, request):
         """returns all existing room in our database"""
-        rooms = models.Room.objects.all()
-        serializer = serializers.RoomSerializer(rooms, many=True)
+        classrooms = models.Classroom.objects.all()
+        serializer = serializers.ClassroomSerializer(classrooms, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class ModuleApiView(APIView):
+class SubjectApiView(APIView):
     """Interacts with tutors"""
     def get(self, request):
         """returns all existing tutors in our database"""
-        modules = models.Module.objects.all()
-        serializer = serializers.ModuleSerializer(modules, many=True)
+        subjects = models.Subject.objects.all()
+        serializer = serializers.SubjectSerializer(subjects, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class TimeTableDataApiView(APIView):
@@ -68,7 +68,7 @@ class TimeTableDataApiView(APIView):
 
         # Import Subjects
         for child in root.iter('subject'):
-            models.Module.objects.get_or_create(
+            models.Subject.objects.get_or_create(
                 subject_id=child.attrib['id'],
                 defaults={
                     'name': child.attrib['name'],
@@ -78,7 +78,7 @@ class TimeTableDataApiView(APIView):
 
         # Import Teachers
         for child in root.iter('teacher'):
-            models.Tutor.objects.get_or_create(
+            models.Teacher.objects.get_or_create(
                 teacher_id=child.attrib['id'],
                 defaults={
                     'first_name': child.attrib['firstname'],
@@ -87,6 +87,8 @@ class TimeTableDataApiView(APIView):
                     # for booking -> 'module': models.Module.objects.get(subject_id=child.attrib['subject'])
                 }
             )
+
+
 
         msg = {'success': 'data is successfully stored'}
         return Response(msg, status=status.HTTP_201_CREATED)
