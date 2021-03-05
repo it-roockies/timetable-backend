@@ -51,7 +51,7 @@ class RoomSerializer(serializers.ModelSerializer):
         ]
 
 class ModuleSerializer(serializers.ModelSerializer):
-    """Interacts with module data"""
+    """Interacts with Module data"""
     class Meta:
         model = models.Module
         fields = [
@@ -59,9 +59,9 @@ class ModuleSerializer(serializers.ModelSerializer):
         ]
 
 class GroupSerializer(serializers.ModelSerializer):
-    """Interacts with Tutor data"""
+    """Interacts with Group data"""
     class Meta:
-        model = models.Tutor
+        model = models.Group
         fields = [
             'name',
         ]

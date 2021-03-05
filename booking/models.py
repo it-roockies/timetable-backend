@@ -6,10 +6,6 @@ class User(AbstractUser):
     """Just customizing default django's user."""
     pass
 
-
-
-
-
 class Group(models.Model):
     group_id = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
@@ -30,17 +26,25 @@ class Module(models.Model):
 
 
 class Tutor(models.Model):
-    teacher_id = models.CharField(max_length=255, unique=True)
+    teacher_id = models.CharField(max_length=255, unique=True, editable=False)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=256)
-    module = models.ManyToManyField(Module)
     short_name = models.CharField(max_length=3)
+    modules = models.ManyToManyField(Module, related_name="tutors", through='TutorModule')
 
 
     def __str__(self):
         """returns professors full name"""
         full_name = self.first_name + ' ' + self.last_name
         return full_name
+
+
+class TutorModule(models.Model):
+    tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE)
+    module = models.ForeignKey(Module, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = (('tutor', 'module'), )
 
 
 class Room(models.Model):
