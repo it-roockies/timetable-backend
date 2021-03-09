@@ -7,6 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = [
+            'id',
             'username',
             'email',
             'password'
@@ -37,6 +38,7 @@ class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Teacher
         fields = [
+            'id',
             'firstname',
             'lastname',
             'subject'
@@ -47,6 +49,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Classroom
         fields = [
+            'id',
             'title',
         ]
 
@@ -55,6 +58,7 @@ class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Subject
         fields = [
+            'id',
             'name',
         ]
 
@@ -63,5 +67,6 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Group
         fields = [
+            'id',
             'name',
         ]
