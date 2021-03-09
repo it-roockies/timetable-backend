@@ -1,24 +1,29 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+
+
 # Create your models here.
 
 class User(AbstractUser):
     """Just customizing default django's user."""
     pass
 
+
 class Group(models.Model):
     group_id = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
+
+    # class_id = models.CharField(max_length=255)
 
     def __str__(self):
         """returns group name"""
         return self.name
 
+
 class Subject(models.Model):
     subject_id = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=256)
     short = models.CharField(max_length=5)
-
 
     def __str__(self):
         """returns module name"""
@@ -32,7 +37,6 @@ class Teacher(models.Model):
     short = models.CharField(max_length=3)
     subjects = models.ManyToManyField(Subject, related_name="teachers", through='TeacherSubject')
 
-
     def __str__(self):
         """returns professors full name"""
         full_name = self.firstname + ' ' + self.lastname
@@ -44,34 +48,34 @@ class TeacherSubject(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('teacher', 'subject'), )
+        unique_together = (('teacher', 'subject'),)
 
 
 class Classroom(models.Model):
     classroom_id = models.CharField(max_length=255, unique=True)
-    title = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+
+    # teacher_id = models.CharField(max_length=255)
+
     # capacity = models.IntegerField()
 
     def __str__(self):
         """returns title of the room"""
-        return self.title
+        return self.name
 
 
 class Booking(models.Model):
-    FIRST   = 1
-    SECOND  = 2
-    THIRD   = 3
-    FOURTH  = 4
-    FIFTH   = 5
     period_of_lesson = [
-        (FIRST, '9:00-10:00'),
-        (SECOND, '10:20-11:20'),
-        (THIRD, '12:00-13:00'),
-        (FOURTH, '13:20-14:20'),
-        (FIFTH, '14:40-15:40')
+        ("1", '9:00-10:00'),
+        ("2", '10:20-11:20'),
+        ("3", '12:00-13:00'),
+        ("4", '13:20-14:20'),
+        ("5", '14:40-15:40'),
+        ("6", '16:00-17:00')
     ]
+
     date = models.DateField()
-    period = models.CharField(max_length=1, choices=period_of_lesson, default=FIRST)
+    period = models.CharField(max_length=1, choices=period_of_lesson, default='1')
     group = models.ForeignKey(Group, on_delete=models.CASCADE, default='group')
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, default='classroom')
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, default='teacher')
@@ -79,13 +83,13 @@ class Booking(models.Model):
 
 
 class Day(models.Model):
-    E   = '11111'
-    MO  = '100000'
-    TU  = '010000'
-    WE  = '001000'
-    TH  = '000100'
-    FR  = '000010'
-    SA  = '000001'
+    E = '11111'
+    MO = '100000'
+    TU = '010000'
+    WE = '001000'
+    TH = '000100'
+    FR = '000010'
+    SA = '000001'
     week_days = [
         (E, 'Every day'),
         (MO, 'Monday'),
@@ -97,6 +101,7 @@ class Day(models.Model):
     ]
     day_id = models.CharField(max_length=255, unique=True)
     day = models.CharField(max_length=6, choices=week_days, default=MO)
+
 
 class Week(models.Model):
     All = "111111111111111"
@@ -138,6 +143,7 @@ class Week(models.Model):
     week = models.CharField(max_length=15, choices=week_choices, default=A)
     week_id = models.CharField(max_length=255, unique=True)
 
+
 class Term(models.Model):
     YR = '11'
     T1 = '10'
@@ -151,4 +157,22 @@ class Term(models.Model):
     term_id = models.CharField(max_length=255, unique=True)
     term = models.CharField(max_length=2, choices=term_choices, default=T1)
 
-
+# class Card(models.Model):
+#     FIRST = 1
+#     SECOND = 2
+#     THIRD = 3
+#     FOURTH = 4
+#     FIFTH = 5
+#     period_of_lesson = [
+#         (FIRST, '9:00-10:00'),
+#         (SECOND, '10:20-11:20'),
+#         (THIRD, '12:00-13:00'),
+#         (FOURTH, '13:20-14:20'),
+#         (FIFTH, '14:40-15:40')
+#     ]
+#     booking_id = models.CharField(max_length=255)
+#     classroom_id = models.CharField(max_length=255)
+#     period = models.CharField(max_length=1, choices=period_of_lesson, default=FIRST)
+#     day = models.CharField(max_length=255)
+#     week = models.CharField(max_length=255)
+#     term = models.CharField(max_length=255)
