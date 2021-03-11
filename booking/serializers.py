@@ -41,7 +41,7 @@ class TeacherSerializer(serializers.ModelSerializer):
             'id',
             'firstname',
             'lastname',
-            'subject'
+            'short',
         ]
 
 class ClassroomSerializer(serializers.ModelSerializer):
@@ -50,7 +50,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
         model = models.Classroom
         fields = [
             'id',
-            'title',
+            'name',
         ]
 
 class SubjectSerializer(serializers.ModelSerializer):

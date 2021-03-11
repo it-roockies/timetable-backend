@@ -4,7 +4,7 @@ from . import serializers
 from . import models
 from rest_framework import generics
 from rest_framework import status
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 # Create your views here.
@@ -21,7 +21,7 @@ class CreateUserView(APIView):
             return Response(msg, status=status.HTTP_201_CREATED)
 
 
-class BookingApiViewSet(ReadOnlyModelViewSet):
+class BookingViewSet(ReadOnlyModelViewSet):
     """Interacts with booking"""
     queryset = models.Booking.objects.all()
     serializer_class = serializers.BookingSerializer
@@ -59,9 +59,21 @@ class SubjectApiView(APIView):
         serializer = serializers.SubjectSerializer(subjects, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-class TimeTableDataApiView(APIView):
+class TimeTableViewSet(ViewSet):
+    """ Returns table date for current week """
+    def list(self, request):
+        today = date.today()
+        start_date = today - timedelta(days=today.weekday())
+        end_date = start_date + timedelta(days=6)
+
+        bookings = models.Booking.objects.filter(date__range=[start_date, end_date]).order_by('date')
+
+        
+
+
+
     """Interacts with incoming 'xml'file """
-    def post(self, request):
+    def create(self, request):
         """takes file and stores information into database"""
         file = request.FILES['file']
         tree = ET.parse(file)

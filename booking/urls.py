@@ -4,16 +4,16 @@ from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register('booking', views.BookingApiViewSet)
+router.register('booking', views.BookingViewSet)
+router.register('timetable', views.TimeTableViewSet, basename='timetable')
 
 urlpatterns = [
     path('user/', views.CreateUserView.as_view(), name='create-user'),
-    path('tutor/', views.TeacherApiView.as_view(), name='tutor'),
+    path('teacher/', views.TeacherApiView.as_view(), name='teacher'),
     path('group/', views.GroupApiView.as_view(), name='group'),
-    path('module/', views.SubjectApiView.as_view(), name='module'),
-    path('room/', views.ClassroomApiView.as_view(), name='room'),
+    path('subject/', views.SubjectApiView.as_view(), name='subject'),
+    path('classroom/', views.ClassroomApiView.as_view(), name='classroom'),
     path('token/', obtain_auth_token),
-    path('timetable-data/', views.TimeTableDataApiView.as_view(), name='timetable-data'),
     path('', include(router.urls)),
 ]
 
