@@ -11,6 +11,8 @@ from rest_framework.views import APIView
 
 class CreateUserView(APIView):
     """Handles user object in the system"""
+    authentication_classes = []
+    permission_classes = []
     def post(self, request):
         serializer = serializers.UserSerializer(data=request.data)
         if not serializer.is_valid():
