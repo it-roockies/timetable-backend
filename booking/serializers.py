@@ -1,21 +1,52 @@
 from rest_framework import serializers
 from . import models
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 
 
 class UserSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = get_user_model()
         fields = [
             'id',
             'username',
-            'email',
-            'password'
+            'password',
+            'telegram_id',
+            'faculty',
+            'education_year',
+            'raw_password'
         ]
+
 
     def create(self, validated_data):
         """creates and saves a user"""
         return get_user_model().objects.create_user(**validated_data)
+
+
+
+# class AuthTokenSerializer(serializers.Serializer):
+#     """Serializes user authentication object"""
+#     student_id = serializers.CharField()
+#     password = serializers.CharField()
+#
+#
+#     def validate(self, attrs):
+#         """checks and authenticates given credential"""
+#         student_id = attrs.get('student_id')
+#         password = attrs.get('password')
+#
+#         user = authenticate(
+#             request=self.context.get('request'),
+#             username=student_id,
+#             password=password
+#         )
+#
+#         if not user:
+#             msg = 'Unable to authenticate with provided credentials'
+#             raise serializers.ValidationError(msg, code='authentication')
+#         attrs['user'] = user
+#
+#         return attrs
 
 
 

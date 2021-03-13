@@ -2,8 +2,11 @@ from datetime import date, timedelta
 import xml.etree.ElementTree as ET
 from . import serializers
 from . import models
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from rest_framework import generics
 from rest_framework import status
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -21,6 +24,34 @@ class CreateUserView(APIView):
             serializer.save()
             msg = {"success": "You have successfully been registered"}
             return Response(msg, status=status.HTTP_201_CREATED)
+
+
+    def get(self, request):
+        """get user by its telegram id"""
+        telegram_id = request.data['telegram_id']
+        try:
+            user = models.User.objects.get(telegram_id=telegram_id)
+        except models.User.DoesNotExist:
+            return Response({"message": "User you have searched was not found"}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = serializers.UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserDetailView(APIView):
+    """handles each user object"""
+
+    def post(self, request, user_id):
+        user = models.User.objects.get(id=user_id)
+        serializer = serializers.UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            msg = {"message": "User is successfully updated"}
+            return Response(msg, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class CreateAuthTokenView(ObtainAuthToken):
+#     serializer_class = serializers.AuthTokenSerializer
 
 
 class BookingViewSet(ReadOnlyModelViewSet):

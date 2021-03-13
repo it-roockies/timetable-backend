@@ -1,12 +1,43 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
 
 
 # Create your models here.
 
+# class UserManager(BaseUserManager):
+#     """manages our custom user model"""
+#     def create_user(self, student_id, password=None, **extra_fields):
+#         """creates, saves and returns a user"""
+#         if not student_id:
+#             raise ValueError("Every user must have student id")
+#
+#         user = self.model(student_id=student_id, **extra_fields)
+#         user.save(using=self._db)
+#
+#         return user
+#
+#     def create_superuser(self, telegram_id, password, **extra_fields):
+#         """create a super user"""
+#
+#         user = self.create_user(telegram_id=telegram_id, password=password, **extra_fields)
+#         user.is_superuser = True
+#         user.is_staff = True
+#
+#         user.save(using=self._db)
+#
+#         return user
+
+
 class User(AbstractUser):
     """Just customizing default django's user."""
-    pass
+    faculty = models.CharField(max_length=255, blank=True, null=True)
+    education_year = models.IntegerField(default=1)
+    telegram_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
+    raw_password = models.CharField(max_length=255, blank=True, null=True)
+
+
+    def __str__(self):
+        return self.username
 
 
 class Group(models.Model):
