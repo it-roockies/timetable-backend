@@ -27,25 +27,32 @@ STUDENT_ID, DATE_OF_BIRTH, EDUCATION_YEAR, FACULTY, SUBJECTS, TEACHER, QUESTION,
 reg_data = {}
 def start(update: Update, context: CallbackContext) -> int:
     telegram_id = update.message.from_user.id
-
+    print(telegram_id)
     # print(telegram_id)
     data = {
         "telegram_id": telegram_id
     }
-    # print("I am here")
-    # response = requests.get(url=USER_ENDPOINT, data=data)
-    # time.sleep(2)
-    # print(response.json())
-    # if response.json()['telegram_id'] == telegram_id:
-    #     print(telegram_id)
-    #     return SUBJECTS
-    # else:
-    update.message.reply_text(
-    "Hello, this bot serves you to assess teacher in TTPU."
-    "Please enter your student id in numbers like: (12259)"
-    "If you do not want to assess teachers simply click here /cancel."
-    )
-    return STUDENT_ID
+    print("I am here")
+    response = requests.get(url=USER_ENDPOINT, data=data)
+    time.sleep(2)
+    print(response.json())
+
+
+    if "telegram_id" in response.json():
+        reply_keyboard = [['fizika', 'matematika', 'informatika']]
+        update.message.reply_text(
+            "Thank you so much"
+            "Please choose which subject do you want to give your comments",
+            reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
+        )
+        return SUBJECTS
+    else:
+        update.message.reply_text(
+        "Hello, this bot serves you to assess teacher in TTPU."
+        "Please enter your student id in numbers like: (12259)"
+        "If you do not want to assess teachers simply click here /cancel."
+        )
+        return STUDENT_ID
 
 def cancel(update: Update, context: CallbackContext) -> int:
     update.message.reply_text(
