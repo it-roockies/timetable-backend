@@ -1,6 +1,5 @@
 from django.urls import path, include
 from . import views
-from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -14,7 +13,6 @@ urlpatterns = [
     path('group/', views.GroupApiView.as_view(), name='group'),
     path('subject/', views.SubjectApiView.as_view(), name='subject'),
     path('classroom/', views.ClassroomApiView.as_view(), name='classroom'),
-    path('token/', obtain_auth_token),
     path('', include(router.urls)),
 ]
 
