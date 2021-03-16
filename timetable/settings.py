@@ -25,7 +25,7 @@ SECRET_KEY = '@gu#zv4dgbkwz1ex@nh7gvlq4cfshy81ebjccui!8dsof6o%87'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'authentication',
     'booking',
     'assessment',
     'rest_framework',
@@ -77,6 +78,7 @@ WSGI_APPLICATION = 'timetable.wsgi.application'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
+        'authentication.authentication.TelegramUserAuthentication'
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',

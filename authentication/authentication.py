@@ -7,6 +7,7 @@ from rest_framework.exceptions import AuthenticationFailed
 
 
 class TelegramUserAuthentication(TokenAuthentication):
+    keyword = 'Bot'
     
     def authenticate(self, request):
         token = super(TelegramUserAuthentication, self).authenticate(request)
@@ -34,6 +35,7 @@ class TelegramUserAuthentication(TokenAuthentication):
 
 
 class TelegramBotAuthentication(TokenAuthentication):
+    keyword = 'Bot'
 
     def authenticate_credentials(self, key):
         if key != settings.TELEGRAM_BOT_TOKEN:

@@ -5,10 +5,10 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ['question_text']
+        fields = ['id', 'question_text']
 
 class AnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Answer
-        fields = ['answer', 'teacher', 'subject', 'question']
+        fields = ['id', 'answer', 'teacher', 'subject', 'question']

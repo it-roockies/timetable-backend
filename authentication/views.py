@@ -45,5 +45,5 @@ class TelegramBotViewSet(ViewSet):
         user.telegram_id = telegram_id
         user.save()
 
-        serializer = UserSerializer(request.user)
+        serializer = UserSerializer(user)
         return Response(serializer.data)

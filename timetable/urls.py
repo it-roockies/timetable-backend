@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
 
 import assessment.views
-import auth.views
+import authentication.views
 import booking.views
 
 router = DefaultRouter()
@@ -16,8 +16,8 @@ router.register('group', booking.views.GroupViewSet)
 router.register('subject', booking.views.SubjectViewSet)
 router.register('classroom', booking.views.ClassroomViewSet)
 router.register('timetable', booking.views.TimeTableViewSet, basename='timetable')
-router.register('telegramuser', auth.views.TelegramUserViewSet, basename='telegramuser')
-router.register('telegrambot', auth.views.TelegramBotViewSet, basename='telegrambot')
+router.register('telegramuser', authentication.views.TelegramUserViewSet, basename='telegramuser')
+router.register('telegrambot', authentication.views.TelegramBotViewSet, basename='telegrambot')
 
 
 # Assesment URLs
