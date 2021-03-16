@@ -38,4 +38,19 @@ class TelegramBotAuthentication(TokenAuthentication):
     def authenticate_credentials(self, key):
         if key != settings.TELEGRAM_BOT_TOKEN:
             raise AuthenticationFailed(_('Invalid token.'))
-        return (None, key)
+        return (TelegramBot(), key)
+
+
+class TelegramBot:
+    is_active = True
+
+    def __str__(self):
+        return 'TelegramBot'
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    @property
+    def is_authenticated(self):
+        return True
