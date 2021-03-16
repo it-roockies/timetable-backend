@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -18,7 +19,7 @@ class TelegramUserViewSet(ViewSet):
         return Response(serializer.data)
 
     def list(self, request):
-        serializer = self.get_serializer(request.user)
+        serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
 
@@ -33,7 +34,7 @@ class TelegramBotViewSet(ViewSet):
 
         model = get_user_model()
         try:
-            user = model.objects.get(username=username, email=email)
+            user = model.objects.get(username=username, email=email, telegram_id__isnull=True)
         except model.DoesNotExist:
             raise AuthenticationFailed(_('Invalid user.'))
 
@@ -43,5 +44,5 @@ class TelegramBotViewSet(ViewSet):
         user.telegram_id = telegram_id
         user.save()
 
-        serializer = self.get_serializer(request.user)
+        serializer = UserSerializer(request.user)
         return Response(serializer.data)
