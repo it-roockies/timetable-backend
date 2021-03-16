@@ -140,3 +140,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'booking.User'
+TELEGRAM_BOT_TOKEN = '123'

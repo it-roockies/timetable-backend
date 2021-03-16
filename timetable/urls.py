@@ -1,23 +1,32 @@
-"""timetable URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from rest_framework.authtoken.views import obtain_auth_token
+
+import assessment.views
+import auth.views
+import booking.views
+
+router = DefaultRouter()
+
+# Booking URLs
+router.register('booking', booking.views.BookingViewSet)
+router.register('teacher', booking.views.TeacherViewSet)
+router.register('group', booking.views.GroupViewSet)
+router.register('subject', booking.views.SubjectViewSet)
+router.register('classroom', booking.views.ClassroomViewSet)
+router.register('timetable', booking.views.TimeTableViewSet, basename='timetable')
+router.register('telegramuser', auth.views.TelegramUserViewSet, basename='telegramuser')
+router.register('telegrambot', auth.views.TelegramBotViewSet, basename='telegrambot')
+
+
+# Assesment URLs
+router.register('question', assessment.views.QuestionViewSet)
+router.register('answer', assessment.views.AnswerViewSet, basename='answer')
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/booking/', include('booking.urls')),
-    path('api/assessment/', include('assessment.urls'))
+    path('api/', include(router.urls)),
+    path('api/token/', obtain_auth_token),
 ]

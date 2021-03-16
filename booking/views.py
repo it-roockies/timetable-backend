@@ -7,52 +7,14 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
-# Create your views here.
 
-class CreateUserView(APIView):
-    """Handles user object in the system"""
-    authentication_classes = []
-    permission_classes = []
-    def post(self, request):
-        serializer = serializers.UserSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            serializer.save()
-            msg = {"success": "You have successfully been registered"}
-            return Response(msg, status=status.HTTP_201_CREATED)
-
-
-    def get(self, request):
-        """get user by its telegram id"""
-        telegram_id = request.data['telegram_id']
-        try:
-            user = models.User.objects.get(telegram_id=telegram_id)
-        except models.User.DoesNotExist:
-            return Response({"message": "User you have searched was not found"}, status=status.HTTP_400_BAD_REQUEST)
-        serializer = serializers.UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class UserDetailView(APIView):
-    """handles each user object"""
-
-    def post(self, request, user_id):
-        user = models.User.objects.get(id=user_id)
-        serializer = serializers.UserSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            msg = {"message": "User is successfully updated"}
-            return Response(msg, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# class CreateAuthTokenView(ObtainAuthToken):
-#     serializer_class = serializers.AuthTokenSerializer
-
+class BookingViewSet(ReadOnlyModelViewSet):
+    """Interacts with booking"""
+    queryset = models.Booking.objects.all()
+    serializer_class = serializers.BookingSerializer
 
 class BookingViewSet(ReadOnlyModelViewSet):
     """Interacts with booking"""
@@ -60,37 +22,29 @@ class BookingViewSet(ReadOnlyModelViewSet):
     serializer_class = serializers.BookingSerializer
 
 
-class TeacherApiView(APIView):
-    """Interacts with tutors"""
-    def get(self, request):
-        """returns all existing tutors in our database"""
-        tutors = models.Teacher.objects.all()
-        serializer = serializers.TeacherSerializer(tutors, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+class TeacherViewSet(ReadOnlyModelViewSet):
+    """Interacts with teachers"""
+    queryset = models.Teacher.objects.all()
+    serializer_class = serializers.TeacherSerializer
 
-class GroupApiView(APIView):
+
+class GroupViewSet(ReadOnlyModelViewSet):
     """Interacts with groups"""
-    def get(self, request):
-        """returns all existing groups in our database"""
-        groups = models.Group.objects.all()
-        serializer = serializers.GroupSerializer(groups, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    queryset = models.Group.objects.all()
+    serializer_class = serializers.GroupSerializer
 
-class ClassroomApiView(APIView):
+
+class ClassroomViewSet(ReadOnlyModelViewSet):
     """Interacts with rooms"""
-    def get(self, request):
-        """returns all existing room in our database"""
-        classrooms = models.Classroom.objects.all()
-        serializer = serializers.ClassroomSerializer(classrooms, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    queryset = models.Classroom.objects.all()
+    serializer_class = serializers.ClassroomSerializer
 
-class SubjectApiView(APIView):
-    """Interacts with tutors"""
-    def get(self, request):
-        """returns all existing tutors in our database"""
-        subjects = models.Subject.objects.all()
-        serializer = serializers.SubjectSerializer(subjects, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class SubjectViewSet(ReadOnlyModelViewSet):
+    """Interacts with rooms"""
+    queryset = models.Subject.objects.all()
+    serializer_class = serializers.SubjectSerializer
+
 
 class TimeTableViewSet(ViewSet):
     """ Returns table date for current week """
