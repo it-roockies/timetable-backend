@@ -9,10 +9,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = [
-            'id',
             'faculty',
             'education_year',
         ]
+        read_only_fields= [ 'id' ]
 
     def get_token(self, obj):
         token, created = Token.objects.get_or_create(user=obj)
