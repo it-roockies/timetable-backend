@@ -9,7 +9,7 @@ from rest_framework.exceptions import AuthenticationFailed
 class TelegramUserAuthentication(TokenAuthentication):
     
     def authenticate(self, request):
-        (_, token) = super(TelegramUserAuthentication, self).authenticate(request)
+        token = super(TelegramUserAuthentication, self).authenticate(request)
         
         telegram_id = request.META.get('HTTP_TELEGRAM_ID', None)
 
