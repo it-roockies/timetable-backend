@@ -34,6 +34,7 @@ class User(AbstractUser):
     education_year = models.IntegerField(default=1)
     telegram_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
     raw_password = models.CharField(max_length=255, blank=True, null=True)
+    group = models.ForeignKey('Group', on_delete=models.CASCADE, null=True)
 
 
     def __str__(self):
