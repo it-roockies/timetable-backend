@@ -23,6 +23,7 @@ router.register('telegrambot', authentication.views.TelegramBotViewSet, basename
 # Assesment URLs
 router.register('question', assessment.views.QuestionViewSet)
 router.register('answer', assessment.views.AnswerViewSet, basename='answer')
+router.register('choice', assessment.views.ChoiceViewSet, basename='choice')
 
 
 urlpatterns = [

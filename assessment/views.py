@@ -1,13 +1,17 @@
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 
-from .serializers import QuestionSerializer, AnswerSerializer
-from .models import Question, Answer
+from .serializers import QuestionSerializer, AnswerSerializer, ChoiceSerializer
+from .models import Question, Answer, Choice
 
 
 class QuestionViewSet(ReadOnlyModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
+
+class ChoiceViewSet(ReadOnlyModelViewSet):
+    queryset = Choice.objects.all()
+    serializer_class = ChoiceSerializer
 
 class AnswerViewSet(ModelViewSet):
     serializer_class = AnswerSerializer

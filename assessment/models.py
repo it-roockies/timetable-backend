@@ -7,9 +7,25 @@ from booking.models import Subject, Teacher
 class Question(models.Model):
     """question object for users"""
     question_text = models.CharField(max_length=256)
+    type_choices = [
+        ("choice", "choice"),
+        ("text", "text")
+    ]
+    question_type = models.CharField(max_length=20, choices=type_choices)
+    choice = models.ForeignKey("Choice", related_name="choice", on_delete=models.CASCADE, blank=True, null=True)
+
+
 
     def __str__(self):
         return self.question_text
+
+class Choice(models.Model):
+    name = models.CharField(max_length=255)
+    variant = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
 
 class Answer(models.Model):
     """answer object"""
