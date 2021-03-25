@@ -26,11 +26,11 @@ router.register('studentdata', booking.views.UserViewSet, basename='student-data
 router.register('question', assessment.views.QuestionViewSet)
 router.register('answer', assessment.views.AnswerViewSet, basename='answer')
 router.register('choice', assessment.views.ChoiceViewSet, basename='choice')
+router.register('export', assessment.views.ExportViewSet, basename='export')
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/token/', obtain_auth_token),
-    path('api/csv/', assessment.views.csv_file)
 ]

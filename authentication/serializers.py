@@ -8,4 +8,5 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'group',
+            'is_staff'
         ]
