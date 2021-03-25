@@ -1,4 +1,5 @@
 import csv
+from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.http import StreamingHttpResponse
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, ViewSet
@@ -53,12 +54,13 @@ def iter_items(items, pseudo_buffer):
     for item in items:
         yield writer.writerow(get_data(item))
 
+
 class ExportViewSet(ViewSet):
     authentication_classes = [TimeLimitedQueryParamTokenAuthentication]
     
     """ returns current survey results as a csv file """
     def list(self, request):
-        queryset = Answer.objects.all()
+        queryset = sync_to_async(Answer.objects.all)()
         response = StreamingHttpResponse(
             streaming_content=(iter_items(queryset, Echo())),
             content_type='text/csv',
