@@ -95,6 +95,14 @@ class Classroom(models.Model):
         """returns title of the room"""
         return self.name
 
+class Lesson(models.Model):
+    lesson_id = models.CharField(max_length=255, unique=True)
+    groups = models.ManyToManyField(Group)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, default='teacher')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, default='subject')
+
+    def __str__(self):
+        return f"{self.subject} ({self.teacher})"
 
 class Booking(models.Model):
     period_of_lesson = [
@@ -108,10 +116,8 @@ class Booking(models.Model):
 
     date = models.DateField()
     period = models.CharField(max_length=1, choices=period_of_lesson, default='1')
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, default='group')
-    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, default='classroom')
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, default='teacher')
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, default='subject')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, default='lesson')
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, blank=True, null=True)
 
 
 class Day(models.Model):

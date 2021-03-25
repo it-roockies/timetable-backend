@@ -49,8 +49,15 @@ class SubjectViewSet(ReadOnlyModelViewSet):
     serializer_class = serializers.SubjectSerializer
 
 
+def get_date_for_day(day):
+    today = date.today()
+    start = today - timedelta(days=today.weekday())
+    result = start + timedelta(days=DAYS_MAP[day])
+    return result
+
 class TimeTableViewSet(ViewSet):
     """ Returns table date for current week """
+
     def list(self, request):
         today = date.today()
         start_date = today - timedelta(days=today.weekday())
@@ -133,40 +140,85 @@ class TimeTableViewSet(ViewSet):
                     'name': child.attrib['name'],
                 }
             )
-
-        lessons = {}
+        # import lesson
         for child in root.iter('lesson'):
-            lessons[child.attrib['id']] = {
-                'teacher_id': child.attrib['teacherids'],
-                'subject_id': child.attrib['subjectid'],
-                'group_id': child.attrib['classids'].split(',')[0]
-            }
+            lesson_id = child.attrib['id']
+            subject_id = child.attrib['subjectid']
+            teacher_id = child.attrib['teacherids']
+            group_ids = child.attrib['classids'].split(',')
+            subject_object = models.Subject.objects.get(subject_id=subject_id)
+            teacher_object = models.Teacher.objects.get(teacher_id=teacher_id)
+            lesson, _ = models.Lesson.objects.get_or_create(
+                lesson_id=lesson_id,
+                defaults={
+                    'subject': subject_object,
+                    'teacher': teacher_object
+                }
+            )
+            groups = models.Group.objects.filter(group_id__in=group_ids)
+            lesson.groups.set(groups)
 
+        # import Booking
         for child in root.iter('card'):
             booking_date = get_date_for_day(child.attrib['days'])
             period = child.attrib['period']
-            group_id = lessons[child.attrib['lessonid']]['group_id']
-            classroom_id = child.attrib['classroomids'].split(',')[0]
-            teacher_id = lessons[child.attrib['lessonid']]['teacher_id']
-            subject_id = lessons[child.attrib['lessonid']]['subject_id']
+            classroom_id = child.attrib['classroomids']
+            lesson_id = child.attrib['lessonid']
+            lesson_object = models.Lesson.objects.get(lesson_id=lesson_id)
+            if classroom_id:
+                classroom_object = models.Classroom.objects.get(classroom_id=classroom_id)
+                models.Booking.objects.get_or_create(
+                    date=booking_date,
+                    period=period,
+                    lesson=lesson_object,
+                    classroom=classroom_object
+                )
+            else:
+                models.Booking.objects.get_or_create(
+                    date=booking_date,
+                    period=period,
+                    lesson=lesson_object,
+                    classroom=None
+                )
 
-            classroom_object = models.Classroom.objects.get(classroom_id=classroom_id)
-            print(classroom_id)
-            group_object = models.Group.objects.get(group_id=group_id)
-            teacher_object = models.Teacher.objects.get(teacher_id=teacher_id)
-            subject_object = models.Subject.objects.get(subject_id=subject_id)
-
-            models.Booking.objects.get_or_create(
-                date=booking_date,
-                period=period,
-                group=group_object,
-                classroom=classroom_object,
-                teacher=teacher_object,
-                subject=subject_object
-            )
-
-        msg = {'success': 'data is successfully stored'}
+        msg = {'message': 'all bookings are successfully stored'}
         return Response(msg, status=status.HTTP_201_CREATED)
+
+
+        #
+        # lessons = {}
+        # for child in root.iter('lesson'):
+        #     lessons[child.attrib['id']] = {
+        #         'teacher_id': child.attrib['teacherids'],
+        #         'subject_id': child.attrib['subjectid'],
+        #         'group_id': child.attrib['classids'].split(',')[0]
+        #     }
+        #
+        # for child in root.iter('card'):
+        #     booking_date = get_date_for_day(child.attrib['days'])
+        #     period = child.attrib['period']
+        #     group_id = lessons[child.attrib['lessonid']]['group_id']
+        #     classroom_id = child.attrib['classroomids'].split(',')[0]
+        #     teacher_id = lessons[child.attrib['lessonid']]['teacher_id']
+        #     subject_id = lessons[child.attrib['lessonid']]['subject_id']
+        #
+        #     classroom_object = models.Classroom.objects.get(classroom_id=classroom_id)
+        #     print(classroom_id)
+        #     group_object = models.Group.objects.get(group_id=group_id)
+        #     teacher_object = models.Teacher.objects.get(teacher_id=teacher_id)
+        #     subject_object = models.Subject.objects.get(subject_id=subject_id)
+        #
+        #     models.Booking.objects.get_or_create(
+        #         date=booking_date,
+        #         period=period,
+        #         group=group_object,
+        #         classroom=classroom_object,
+        #         teacher=teacher_object,
+        #         subject=subject_object
+        #     )
+        #
+        # msg = {'success': 'data is successfully stored'}
+        # return Response(msg, status=status.HTTP_201_CREATED)
 
 
 DAYS_MAP = {
@@ -179,14 +231,8 @@ DAYS_MAP = {
 }
 
 
-def get_date_for_day(day):
-    today = date.today()
-    start = today - timedelta(days=today.weekday())
-    result = start + timedelta(days=DAYS_MAP[day])
-    return result
 
-
-date = {
+month_map = {
     "января": 1,
     "январь": 1,
     "январ": 1,
@@ -224,7 +270,7 @@ date = {
 def with_word(birth):
     list_data = birth.split(" ")
     y = list_data[0][0:4]
-    m = str(date[list_data[2]])
+    m = str(month_map[list_data[2]])
     d = str(list_data[1])
     l = [y, m, d]
     ready_data = '-'.join(l)
