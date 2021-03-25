@@ -60,7 +60,7 @@ class ExportViewSet(ViewSet):
     
     """ returns current survey results as a csv file """
     def list(self, request):
-        queryset = await sync_to_async(Answer.objects.all)()
+        queryset = Answer.objects.all()
         response = StreamingHttpResponse(
             streaming_content=(iter_items(queryset, Echo())),
             content_type='text/csv',
