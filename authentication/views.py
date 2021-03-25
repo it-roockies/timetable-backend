@@ -8,6 +8,12 @@ from rest_framework.exceptions import AuthenticationFailed
 from .serializers import UserSerializer
 from .authentication import TelegramUserAuthentication, TelegramBotAuthentication
 
+class SessionViewSet(ViewSet):
+    """Interacts with browser user"""
+    def list(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
 
 class TelegramUserViewSet(ViewSet):
     """Interacts with telegram user"""

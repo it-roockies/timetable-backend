@@ -19,6 +19,7 @@ class Question(models.Model):
     def __str__(self):
         return self.question_text
 
+
 class Choice(models.Model):
     name = models.CharField(max_length=255)
     variant = models.CharField(max_length=255)
