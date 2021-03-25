@@ -19,6 +19,7 @@ router.register('timetable', booking.views.TimeTableViewSet, basename='timetable
 router.register('session', authentication.views.SessionViewSet, basename='session')
 router.register('telegramuser', authentication.views.TelegramUserViewSet, basename='telegramuser')
 router.register('telegrambot', authentication.views.TelegramBotViewSet, basename='telegrambot')
+router.register('querytoken', authentication.views.TimeLimitedQueryParamTokenViewSet, basename='querytoken')
 router.register('studentdata', booking.views.UserViewSet, basename='student-data')
 
 

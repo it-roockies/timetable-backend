@@ -1,6 +1,8 @@
 import csv
+from django.conf import settings
 from django.http import StreamingHttpResponse
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, ViewSet
+from authentication.authentication import TimeLimitedQueryParamTokenAuthentication
 from .serializers import QuestionSerializer, AnswerSerializer, ChoiceSerializer
 from .models import Question, Answer, Choice
 
@@ -25,22 +27,41 @@ class AnswerViewSet(ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class CSVBuffer:
-    """An object that implements just the write method of the file-like interface."""
+def get_headers():
+    return ['user', 'subject', 'teacher', 'question', 'answer']
+
+
+def get_data(answer):
+    return {
+        'user': answer.user,
+        'subject': answer.subject,
+        'teacher': answer.teacher,
+        'question': answer.question,
+        'answer': answer.answer
+    }
+
+
+class Echo(object):
     def write(self, value):
-        """Return the string to write."""
         return value
 
 
+def iter_items(items, pseudo_buffer):
+    writer = csv.DictWriter(pseudo_buffer, fieldnames=get_headers())
+    yield pseudo_buffer.write("user,subject,teacher,question,answer\n")
+
+    for item in items:
+        yield writer.writerow(get_data(item))
+
 class ExportViewSet(ViewSet):
+    authentication_classes = [TimeLimitedQueryParamTokenAuthentication]
+    
     """ returns current survey results as a csv file """
     def list(self, request):
-        writer = csv.writer(CSVBuffer())
-        writer.writerow(['user', 'subject', 'teacher', 'question', 'answer'])
-
+        queryset = Answer.objects.all()
         response = StreamingHttpResponse(
-            (writer.writerow([answer.user, answer.subject, answer.teacher, answer.question, answer.answer]) for answer in Answer.objects.all().iterator),
-            content_type="text/csv"
+            streaming_content=(iter_items(queryset, Echo())),
+            content_type='text/csv',
         )
 
         response['Content-Disposition'] = 'attachment; filename="answers.csv"'

@@ -1,10 +1,13 @@
+import json
+from calendar import timegm
+from cryptography.fernet import Fernet, InvalidToken
+from datetime import datetime
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-
 
 class TelegramUserAuthentication(TokenAuthentication):
     keyword = 'Bot'
@@ -41,6 +44,40 @@ class TelegramBotAuthentication(TokenAuthentication):
         if key != settings.TELEGRAM_BOT_TOKEN:
             raise AuthenticationFailed(_('Invalid token.'))
         return (TelegramBot(), key)
+
+
+class TimeLimitedQueryParamTokenAuthentication(TokenAuthentication):
+    def authenticate(self, request):
+        if 'token' not in request.query_params:
+            raise AuthenticationFailed(_('Invalid token. No credentials provided.'))
+
+        # Get token from request query params
+        token = request.query_params.get('token').encode("utf-8")
+
+        # Decrypt token
+        cipher_suite = Fernet(settings.TOKEN_ENCRYPTION_KEY)
+        try:
+            json_str = cipher_suite.decrypt(token)
+        except InvalidToken:
+            raise AuthenticationFailed(_('Invalid token. Token should be enrypted data.'))
+
+        # read json data
+        try:
+            payload = json.loads(json_str)
+        except json.decoder.JSONDecodeError:
+            raise AuthenticationFailed(_('Invalid token. Token should countain json data.'))
+
+        # validate expiration time
+        try:
+            exp = int(payload["exp"])
+        except ValueError:
+            raise AuthenticationFailed(_('Invalid token. Expiration Time claim (exp) must be an integer.'))
+        
+        now = timegm(datetime.utcnow().utctimetuple())
+        if exp < now:
+            raise AuthenticationFailed(_("Invalid token. Token has expired."))
+
+        return self.authenticate_credentials(payload["token"])
 
 
 class TelegramBot:
