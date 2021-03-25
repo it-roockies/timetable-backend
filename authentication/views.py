@@ -31,11 +31,11 @@ class TelegramBotViewSet(ViewSet):
     def create(self, request):
         telegram_id = request.data['telegram_id']
         username = request.data['username']
-        email = request.data['email']
+        date_of_birth = request.data['date_of_birth']
 
         model = get_user_model()
         try:
-            user = model.objects.get(username=username, email=email, telegram_id__isnull=True)
+            user = model.objects.get(username=username, date_of_birth=date_of_birth, telegram_id__isnull=True)
         except model.DoesNotExist:
             raise AuthenticationFailed(_('Invalid user.'))
 

@@ -30,10 +30,10 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 
 class User(AbstractUser):
     """Just customizing default django's user."""
-    faculty = models.CharField(max_length=255, blank=True, null=True)
-    education_year = models.IntegerField(default=1)
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
     telegram_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
-    raw_password = models.CharField(max_length=255, blank=True, null=True)
+    date_of_birth = models.DateField(max_length=255, blank=True, null=True)
     group = models.ForeignKey('Group', on_delete=models.CASCADE, null=True, blank=True)
 
 

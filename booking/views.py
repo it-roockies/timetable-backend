@@ -2,6 +2,9 @@ from datetime import date, timedelta
 import xml.etree.ElementTree as ET
 from . import serializers
 from . import models
+import csv
+from io import StringIO
+from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import generics
@@ -54,7 +57,8 @@ class TimeTableViewSet(ViewSet):
         end_date = start_date + timedelta(days=6)
 
         bookings = models.Booking.objects.filter(date__range=[start_date, end_date]).order_by('date')
-
+        serializer = serializers.BookingSerializer(bookings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
         
 
 
@@ -147,6 +151,7 @@ class TimeTableViewSet(ViewSet):
             subject_id = lessons[child.attrib['lessonid']]['subject_id']
 
             classroom_object = models.Classroom.objects.get(classroom_id=classroom_id)
+            print(classroom_id)
             group_object = models.Group.objects.get(group_id=group_id)
             teacher_object = models.Teacher.objects.get(teacher_id=teacher_id)
             subject_object = models.Subject.objects.get(subject_id=subject_id)
@@ -179,3 +184,126 @@ def get_date_for_day(day):
     start = today - timedelta(days=today.weekday())
     result = start + timedelta(days=DAYS_MAP[day])
     return result
+
+
+date = {
+    "января": 1,
+    "январь": 1,
+    "январ": 1,
+    "февраля": 2,
+    "февраль": 2,
+    "феврал": 2,
+    "марта": 3,
+    "март": 3,
+    "апреля": 4,
+    "апрель": 4,
+    "апрел": 4,
+    "мая": 5,
+    "май": 5,
+    "июня": 6,
+    "июнь": 6,
+    "июн": 6,
+    "июля": 7,
+    "июль": 7,
+    "июл": 7,
+    "августа": 8,
+    "август": 8,
+    "сентября": 9,
+    "сентябрь": 9,
+    "сентябр": 9,
+    "октября": 10,
+    "октябрь": 10,
+    "октябр": 10,
+    "ноября": 11,
+    "ноябрь": 11,
+    "ноябр": 11,
+    "декабря": 12,
+    "декабрь": 12,
+    "декабр": 12
+}
+def with_word(birth):
+    list_data = birth.split(" ")
+    y = list_data[0][0:4]
+    m = str(date[list_data[2]])
+    d = str(list_data[1])
+    l = [y, m, d]
+    ready_data = '-'.join(l)
+    return ready_data
+
+def with_number(birth):
+    data = birth.split(".")
+    if data[2] in ["03", "02", "01", "00"]:
+        y = "20" + data[2]
+    else:
+        y = "19" + data[2]
+    m = data[1]
+    if m[0] == "0":
+        m = m.replace(m[0], "")
+    d = data[0]
+    if d[0] == "0":
+        if len(d) == 2:
+            d = d.replace(d[0], "")
+        elif len(d) == 3:
+            d = d.replace(d[0:2], "")
+    l = [y, m, d]
+    ready_data = "-".join(l)
+    return ready_data
+
+def default(birth):  # 01,05,2002    -> 2002-5-1
+    l = birth.split(",")
+    y = l[2]
+    m = l[1]
+    if len(m[0]) == 0:
+        m = m.replace(m[0], "")
+    d = l[0]
+    if len(d[0]) == 0:
+        d = d.replace(d[0], "")
+    lis = [y, m, d]
+    ready_data = '-'.join(lis)
+    return ready_data
+
+class UserViewSet(ViewSet):
+    """manages users"""
+    def list(self, request):
+        """returns all students in our database"""
+        users = get_user_model().objects.all()
+        serializer = serializers.UserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def create(self, request):
+        """handles incoming student list"""
+        csv_file = request.FILES['student_data']
+        # with open(file=csv_file, mode='r') as file:
+        csvf = StringIO(csv_file.read().decode())
+        csv_reader = csv.reader(csvf, delimiter=';')
+        ctr = 0
+        for row in csv_reader:
+            print(row)
+            if ctr == 0:
+                ctr += 1
+                continue
+            else:
+                if (len(row[3]) == 10 or len(row[3]) == 12) and row[3][-1].isnumeric():  # 03, 10, 1992
+                    date_of_birth = default(row[3])
+                else:
+                    if len(row[3]) > 8:  # with word
+                        date_of_birth = with_word(row[3])
+                    elif len(row[3]) == 8:
+                        date_of_birth = with_number(row[3])
+                    else:
+                        date_of_birth = None
+            first_name = row[2]
+            last_name = row[1]
+            username = row[0]
+            date_of_birth = date_of_birth
+            model = get_user_model()
+            model.objects.get_or_create(username=username,
+                                        defaults={'date_of_birth': date_of_birth,
+                                                  'first_name': first_name,
+                                                  'last_name': last_name
+                                        }
+                                        )
+        msg = {
+            "message": "student list have successfully been stored"
+        }
+        return Response(msg, status=status.HTTP_201_CREATED)

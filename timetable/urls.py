@@ -18,6 +18,7 @@ router.register('classroom', booking.views.ClassroomViewSet)
 router.register('timetable', booking.views.TimeTableViewSet, basename='timetable')
 router.register('telegramuser', authentication.views.TelegramUserViewSet, basename='telegramuser')
 router.register('telegrambot', authentication.views.TelegramBotViewSet, basename='telegrambot')
+router.register('studentdata', booking.views.UserViewSet, basename='student-data')
 
 
 # Assesment URLs
@@ -30,4 +31,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/token/', obtain_auth_token),
+    path('api/csv/', assessment.views.csv_file)
 ]

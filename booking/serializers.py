@@ -11,9 +11,10 @@ class UserSerializer(serializers.ModelSerializer):
             'id',
             'username',
             'telegram_id',
-            'faculty',
-            'education_year',
-            'raw_password'
+            'first_name',
+            'last_name',
+            'date_of_birth',
+            'group'
         ]
 
 
