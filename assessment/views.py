@@ -39,7 +39,7 @@ class ExportViewSet(ViewSet):
         writer.writerow(['user', 'subject', 'teacher', 'question', 'answer'])
 
         response = StreamingHttpResponse(
-            (writer.writerow([answer.user, answer.subject, answer.teacher, answer.question, answer.answer]) for answer in answers),
+            (writer.writerow([answer.user, answer.subject, answer.teacher, answer.question, answer.answer]) for answer in Answer.objects.all().iterator),
             content_type="text/csv"
         )
 
