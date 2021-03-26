@@ -10,21 +10,49 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.permissions import BasePermission
 from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.serializers import AuthTokenSerializer
 
 from .serializers import UserSerializer
 from .authentication import TelegramUserAuthentication, TelegramBotAuthentication
 
+
+class SessionPermission(BasePermission):
+    """
+    The request is authenticated as a user, or user can authenticate.
+    """
+
+    def has_permission(self, request, view):
+        return bool(
+            request.method in 'POST' or
+            request.user and
+            request.user.is_authenticated
+        )
+
 class SessionViewSet(ViewSet):
+    permission_classes = (SessionPermission, )
     """Interacts with browser user"""
     def list(self, request):
         serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+        return Response({ "user": serializer.data })
+
+    def create(self, request):
+        serializer = AuthTokenSerializer(data=request.data, context={
+            'request': self.request,
+            'format': self.format_kwarg,
+            'view': self
+        })
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        user_serializer = UserSerializer(user)
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({ "user": user_serializer.data, "token": token.key })
 
 
 class TelegramUserViewSet(ViewSet):
     """Interacts with telegram user"""
-    authentication_classes = [TelegramUserAuthentication]
+    authentication_classes = (TelegramUserAuthentication, )
 
     def create(self, request):
         serializer = UserSerializer(request.user, data=request.data, partial=True)
@@ -39,7 +67,7 @@ class TelegramUserViewSet(ViewSet):
 
 class TelegramBotViewSet(ViewSet):
     """Interacts with telegram user"""
-    authentication_classes = [TelegramBotAuthentication]
+    authentication_classes = (TelegramBotAuthentication, )
 
     def create(self, request):
         telegram_id = request.data['telegram_id']
