@@ -363,7 +363,7 @@ def get_group_name(group_name):
     if group_name == "E-17":
         return ''
 
-    raise ValueError(f'Unknown group name {raw_str}')
+    raise ValueError(f'Unknown group name {group_name}')
 
 
 class UserViewSet(ViewSet):
