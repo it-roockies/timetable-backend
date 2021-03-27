@@ -70,35 +70,42 @@ class TimeTableViewSet(ViewSet):
     """ Returns table date for current week """
     def list(self, request):
         week = request.data.get('week')
-        start_date = datetime.strptime(f'{week}-1', '%Y-W%W-%w').date()
-        # today = date.today()
-        # start_date = today - timedelta(days=today.weekday())
+        if week:
+            start_date = datetime.strptime(f'{week}-1', '%Y-W%W-%w').date()
+        else:
+            today = date.today()
+            start_date = today - timedelta(days=today.weekday())
+
         end_date = start_date + timedelta(days=6)
 
         bookings = models.Booking.objects.filter(date__range=[start_date, end_date]).order_by('date')
         cards = []
         for booking in bookings:
-            date = booking.date
-            period = booking.period
-            subject = booking.lesson.subject.short
-            teacher = booking.lesson.teacher.short
-            groups = booking.lesson.groups.all()  # getting all groups that related to one lesson
-            group = [group.name for group in groups]
-            try:
-                classroom = booking.classroom.name
-            except:
-                classroom = None
-            card = models.Card(period=period,
-                                date=date,
-                                classroom=classroom,
-                                group=group,
-                                teacher=teacher,
-                                subject=subject
-                                )
-            cards.append(card)
-        serializer = serializers.CardSerializer(cards, many=True)
-        # serializer = serializers.BookingSerializer(bookings, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            for group in booking.lesson.groups.all():
+                cards.append({
+                    "booking_id": booking.id,
+                    "lesson_id": booking.lesson.id,
+                    "date": booking.date,
+                    "period": booking.period,
+                    "subject": {
+                        "id": booking.lesson.subject.id,
+                        "name": booking.lesson.subject.short,
+                    },
+                    "teacher": {
+                        "id": booking.lesson.teacher.id,
+                        "name": booking.lesson.teacher.short,
+                    },
+                    "group": {
+                        "id": group.id,
+                        "name": group.name,
+                    },
+                    "classroom": {
+                        "id": booking.classroom.id,
+                        "name": booking.classroom.name,
+                    } if booking.classroom else None,
+                })
+
+        return Response(cards, status=status.HTTP_200_OK)
 
 
     """Interacts with incoming 'xml'file """
