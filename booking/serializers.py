@@ -48,21 +48,58 @@ class UserSerializer(serializers.ModelSerializer):
 #
 #         return attrs
 
+class Classroom(serializers.ModelSerializer):
 
+    class Meta:
+        model = models.Classroom
+        fields = [
+            'id',
+            'name'
+        ]
+
+class LessonSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Lesson
+        fields = [
+            'id',
+            'groups',
+            'teacher',
+            'subject'
+        ]
+
+class ClassroomSerializer(serializers.ModelSerializer):
+    """Interacts with Room data"""
+    class Meta:
+        model = models.Classroom
+        fields = [
+            'id',
+            'name',
+        ]
 
 class BookingSerializer(serializers.ModelSerializer):
     """A serializer that helps us to serializer booking data """
+    lesson = LessonSerializer()
+    classroom = ClassroomSerializer()
+
     class Meta:
         model = models.Booking
         fields = [
             'id',
             'date',
             'period',
-            'group',
-            'classroom',
-            'teacher',
-            'subject'
+            'lesson',
+            'classroom'
         ]
+
+class CardSerializer(serializers.Serializer):
+    period = serializers.CharField(max_length=255)
+    date = serializers.DateField()
+    classroom = serializers.CharField(max_length=255)
+    teacher = serializers.CharField(max_length=255)
+    subject = serializers.CharField(max_length=255)
+    group = serializers.CharField(max_length=255)
+
 
 class TeacherSerializer(serializers.ModelSerializer):
     """Interacts with Tutor data"""
@@ -75,14 +112,6 @@ class TeacherSerializer(serializers.ModelSerializer):
             'short',
         ]
 
-class ClassroomSerializer(serializers.ModelSerializer):
-    """Interacts with Room data"""
-    class Meta:
-        model = models.Classroom
-        fields = [
-            'id',
-            'name',
-        ]
 
 class SubjectSerializer(serializers.ModelSerializer):
     """Interacts with Module data"""

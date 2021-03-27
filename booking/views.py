@@ -14,6 +14,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+
 class BookingViewSet(ReadOnlyModelViewSet):
     """Interacts with booking"""
     queryset = models.Booking.objects.all()
@@ -50,8 +51,9 @@ class SubjectViewSet(ReadOnlyModelViewSet):
 
 
 def get_date_for_day(day):
-    today = date.today()
-    start = today - timedelta(days=today.weekday())
+    """returns date according to week number. 0 is monday"""
+    today = date.today()  # getting today's date
+    start = today - timedelta(days=today.weekday())  # starting of week's date
     result = start + timedelta(days=DAYS_MAP[day])
     return result
 
@@ -59,14 +61,35 @@ class TimeTableViewSet(ViewSet):
     """ Returns table date for current week """
 
     def list(self, request):
+        from datetime import date
         today = date.today()
         start_date = today - timedelta(days=today.weekday())
         end_date = start_date + timedelta(days=6)
 
         bookings = models.Booking.objects.filter(date__range=[start_date, end_date]).order_by('date')
-        serializer = serializers.BookingSerializer(bookings, many=True)
+        cards = []
+        for booking in bookings:
+            date = booking.date
+            period = booking.period
+            subject = booking.lesson.subject.short
+            teacher = booking.lesson.teacher.short
+            groups = booking.lesson.groups.all()  # getting all groups that related to one lesson
+            group = [group.name for group in groups]
+            try:
+                classroom = booking.classroom.name
+            except:
+                classroom = None
+            card = models.Card(period=period,
+                                date=date,
+                                classroom=classroom,
+                                group=group,
+                                teacher=teacher,
+                                subject=subject
+                                )
+            cards.append(card)
+        serializer = serializers.CardSerializer(cards, many=True)
+        # serializer = serializers.BookingSerializer(bookings, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-        
 
 
 

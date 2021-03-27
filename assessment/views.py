@@ -57,7 +57,7 @@ def iter_items(items, pseudo_buffer):
 
 class ExportViewSet(ViewSet):
     authentication_classes = [TimeLimitedQueryParamTokenAuthentication]
-    
+
     """ returns current survey results as a csv file """
     def list(self, request):
         queryset = Answer.objects.all()

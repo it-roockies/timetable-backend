@@ -120,6 +120,18 @@ class Booking(models.Model):
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, blank=True, null=True)
 
 
+class Card:
+    def __init__(self, period, date, classroom, teacher, subject, group):
+        self.period = period
+        self.date = date
+        self.classroom = classroom
+        self.teacher = teacher
+        self.subject = subject
+        self.group = group
+
+
+
+
 class Day(models.Model):
     E = '11111'
     MO = '100000'
