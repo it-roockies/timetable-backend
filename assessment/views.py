@@ -2,7 +2,9 @@ import csv
 from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.http import StreamingHttpResponse
+from rest_framework.permissions import IsAdminUser
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, ViewSet
+
 from authentication.authentication import TimeLimitedQueryParamTokenAuthentication
 from .serializers import QuestionSerializer, AnswerSerializer, ChoiceSerializer
 from .models import Question, Answer, Choice
@@ -56,7 +58,8 @@ def iter_items(items, pseudo_buffer):
 
 
 class ExportViewSet(ViewSet):
-    authentication_classes = [TimeLimitedQueryParamTokenAuthentication]
+    authentication_classes = (TimeLimitedQueryParamTokenAuthentication, )
+    permisson_classes = (IsAdminUser, )
 
     """ returns current survey results as a csv file """
     def list(self, request):
