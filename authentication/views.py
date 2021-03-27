@@ -25,7 +25,7 @@ class SessionPermission(BasePermission):
 
     def has_permission(self, request, view):
         return bool(
-            request.method in 'POST' or
+            request.method == 'POST' or
             request.user and
             request.user.is_authenticated
         )
