@@ -1,6 +1,18 @@
 
 from datetime import date, timedelta, datetime
+# <<<<<<< Updated upstream
 
+# =======
+import xml.etree.ElementTree as ET
+
+from django.views.decorators.csrf import csrf_exempt
+
+from . import serializers
+from django.shortcuts import get_object_or_404
+from . import models
+import csv
+from io import StringIO
+# >>>>>>> Stashed changes
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
@@ -58,13 +70,56 @@ class TimeTablePermission(BasePermission):
             return True
         return bool(request.user and request.user.is_staff)
 
+class GroupLessonViewSet(ViewSet):
+    """returns lessons to the user for given date"""
+    # authentication_classes = []
+    # permission_classes = []
+    def list(self, request):
+        date = request.data.get('date')  # date of the lesson for a particular group
+        group = request.data.get('group')  # group
+        bookings = models.Booking.objects.filter(date=date)  # filtering bookings through data
+        cards = []
+        for booking in bookings:  # given data's bookings
+            try:
+                groupid = models.Group.objects.get(name=group).id  # group id for given group name
+                groupids = [group.id for group in booking.lesson.groups.all()]  # group ids for a particular lesson.
+                # some lesson has more than one group
+            except:
+                continue
+            if groupid in groupids:  # checking whether given group has lesson in this booking
+                date = booking.date
+                period = booking.period
+                subject = booking.lesson.subject.short
+                teacher = booking.lesson.teacher.short
+                try:
+                    classroom = booking.classroom.name
+                except:
+                    classroom = None
+                card = models.Card(period=period,
+                                   date=date,
+                                   classroom=classroom,
+                                   group=group,
+                                   teacher=teacher,
+                                   subject=subject
+                                   )
+                cards.append(card)
+        if len(cards) == 0:
+            msg = {'message': "Today you have no classess"}
+            return Response(msg, status=status.HTTP_200_OK)
+
+        serializer = serializers.CardSerializer(cards, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class TimeTableViewSet(ViewSet):
+# <<<<<<< Updated upstream
     permission_classes = (TimeTablePermission, )
 
+# =======
+# >>>>>>> Stashed changes
     """ Returns table date for current week """
     def list(self, request):
-        today = date.today()
-        bookings = models.Booking.objects.filter(date=today)
+        today = date.today()  # get today's date
+        bookings = models.Booking.objects.filter(date=today)  # getting all bookings for today
 
         cards = []
         for booking in bookings:
@@ -100,6 +155,29 @@ class TimeTableViewSet(ViewSet):
             "groups": serializer.data,
         }, status=status.HTTP_200_OK)
 
+# =======
+#             date = booking.date
+#             period = booking.period
+#             subject = booking.lesson.subject.short
+#             teacher = booking.lesson.teacher.short
+#             groups = booking.lesson.groups.all()  # getting all groups that related to one lesson
+#             group = [group.name for group in groups]
+#             try:
+#                 classroom = booking.classroom.name
+#             except:
+#                 classroom = None
+#             card = models.Card(period=period,
+#                                 date=date,
+#                                 classroom=classroom,
+#                                 group=group,
+#                                 teacher=teacher,
+#                                 subject=subject
+#                                 )
+#             cards.append(card)
+#         serializer = serializers.CardSerializer(cards, many=True)
+#         # serializer = serializers.BookingSerializer(bookings, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+# >>>>>>> Stashed changes
 
     """Interacts with incoming 'xml'file """
     def create(self, request):
@@ -129,5 +207,5 @@ class UserViewSet(ViewSet):
 
         import_students(csv_file)
 
-        msg = { "message": "student list have successfully been stored" }        
+        msg = {"message": "student list have successfully been stored"}
         return Response(msg, status=status.HTTP_201_CREATED)

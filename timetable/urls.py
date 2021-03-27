@@ -15,7 +15,13 @@ router.register('group', booking.views.GroupViewSet)
 router.register('subject', booking.views.SubjectViewSet)
 router.register('classroom', booking.views.ClassroomViewSet)
 router.register('timetable', booking.views.TimeTableViewSet, basename='timetable')
+#<<<<<<< Updated upstream
 router.register('studentdata', booking.views.UserViewSet, basename='studentdata')
+#=======
+router.register('studentdata', booking.views.UserViewSet, basename='student-data')
+router.register('grouplesson', booking.views.GroupLessonViewSet, basename='group-lesson')
+
+#>>>>>>> Stashed changes
 
 # Authentication URLs
 router.register('session', authentication.views.SessionViewSet, basename='session')
@@ -28,7 +34,6 @@ router.register('question', assessment.views.QuestionViewSet)
 router.register('answer', assessment.views.AnswerViewSet, basename='answer')
 router.register('choice', assessment.views.ChoiceViewSet, basename='choice')
 router.register('export', assessment.views.ExportViewSet, basename='export')
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
