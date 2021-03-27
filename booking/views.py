@@ -63,16 +63,9 @@ class TimeTableViewSet(ViewSet):
 
     """ Returns table date for current week """
     def list(self, request):
-        week = request.data.get('week')
-        if week:
-            start_date = datetime.strptime(f'{week}-1', '%Y-W%W-%w').date()
-        else:
-            today = date.today()
-            start_date = today - timedelta(days=today.weekday())
+        today = date.today()
+        bookings = models.Booking.objects.filter(date=today)
 
-        end_date = start_date + timedelta(days=6)
-
-        bookings = models.Booking.objects.filter(date__range=[start_date, end_date]).order_by('date')
         cards = []
         for booking in bookings:
             for group in booking.lesson.groups.all():
