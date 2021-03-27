@@ -23,12 +23,6 @@ class BookingViewSet(ReadOnlyModelViewSet):
     queryset = models.Booking.objects.all()
     serializer_class = serializers.BookingSerializer
 
-class BookingViewSet(ReadOnlyModelViewSet):
-    """Interacts with booking"""
-    queryset = models.Booking.objects.all()
-    serializer_class = serializers.BookingSerializer
-
-
 class TeacherViewSet(ReadOnlyModelViewSet):
     """Interacts with teachers"""
     queryset = models.Teacher.objects.all()
@@ -105,7 +99,13 @@ class TimeTableViewSet(ViewSet):
                     } if booking.classroom else None,
                 })
 
-        return Response(cards, status=status.HTTP_200_OK)
+        groups = models.Group.objects.all()
+        serializer = serializers.GroupSerializer(groups, many=True)
+
+        return Response({
+            "bookings": cards,
+            "groups": serializer.data,
+        }, status=status.HTTP_200_OK)
 
 
     """Interacts with incoming 'xml'file """
