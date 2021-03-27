@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import xml.etree.ElementTree as ET
 from . import serializers
 from . import models
@@ -50,10 +50,10 @@ class SubjectViewSet(ReadOnlyModelViewSet):
     serializer_class = serializers.SubjectSerializer
 
 
-def get_date_for_day(day):
-    """returns date according to week number. 0 is monday"""
-    today = date.today()  # getting today's date
-    start = today - timedelta(days=today.weekday())  # starting of week's date
+def get_date_for_day(day, week: str):
+    """returns date according to week number. 0 is monday (starts from current week's day)"""
+    # today = date.today()  # getting today's date
+    start = datetime.strptime(f"{week}-1", "%Y-W%W-%w").date()  # starting of week's date
     result = start + timedelta(days=DAYS_MAP[day])
     return result
 
@@ -62,8 +62,10 @@ class TimeTableViewSet(ViewSet):
 
     def list(self, request):
         from datetime import date
-        today = date.today()
-        start_date = today - timedelta(days=today.weekday())
+        week = request.data.get('week')
+        start_date = datetime.strptime(f'{week}-1', '%Y-W%W-%w').date()
+        # today = date.today()
+        # start_date = today - timedelta(days=today.weekday())
         end_date = start_date + timedelta(days=6)
 
         bookings = models.Booking.objects.filter(date__range=[start_date, end_date]).order_by('date')
@@ -97,6 +99,7 @@ class TimeTableViewSet(ViewSet):
     def create(self, request):
         """takes file and stores information into database"""
         file = request.FILES['file']
+        week = request.POST.get('week')
         tree = ET.parse(file)
         root = tree.getroot()
 
@@ -183,7 +186,7 @@ class TimeTableViewSet(ViewSet):
 
         # import Booking
         for child in root.iter('card'):
-            booking_date = get_date_for_day(child.attrib['days'])
+            booking_date = get_date_for_day(day=child.attrib['days'], week=week)
             period = child.attrib['period']
             classroom_id = child.attrib['classroomids']
             lesson_id = child.attrib['lessonid']
