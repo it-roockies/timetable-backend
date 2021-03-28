@@ -1,18 +1,6 @@
 
-from datetime import date, timedelta, datetime
-# <<<<<<< Updated upstream
+from datetime import date
 
-# =======
-import xml.etree.ElementTree as ET
-
-from django.views.decorators.csrf import csrf_exempt
-
-from . import serializers
-from django.shortcuts import get_object_or_404
-from . import models
-import csv
-from io import StringIO
-# >>>>>>> Stashed changes
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
@@ -110,12 +98,10 @@ class GroupLessonViewSet(ViewSet):
         serializer = serializers.CardSerializer(cards, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class TimeTableViewSet(ViewSet):
-# <<<<<<< Updated upstream
     permission_classes = (TimeTablePermission, )
 
-# =======
-# >>>>>>> Stashed changes
     """ Returns table date for current week """
     def list(self, request):
         today = date.today()  # get today's date
@@ -154,30 +140,6 @@ class TimeTableViewSet(ViewSet):
             "bookings": cards,
             "groups": serializer.data,
         }, status=status.HTTP_200_OK)
-
-# =======
-#             date = booking.date
-#             period = booking.period
-#             subject = booking.lesson.subject.short
-#             teacher = booking.lesson.teacher.short
-#             groups = booking.lesson.groups.all()  # getting all groups that related to one lesson
-#             group = [group.name for group in groups]
-#             try:
-#                 classroom = booking.classroom.name
-#             except:
-#                 classroom = None
-#             card = models.Card(period=period,
-#                                 date=date,
-#                                 classroom=classroom,
-#                                 group=group,
-#                                 teacher=teacher,
-#                                 subject=subject
-#                                 )
-#             cards.append(card)
-#         serializer = serializers.CardSerializer(cards, many=True)
-#         # serializer = serializers.BookingSerializer(bookings, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-# >>>>>>> Stashed changes
 
     """Interacts with incoming 'xml'file """
     def create(self, request):

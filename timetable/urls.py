@@ -15,13 +15,8 @@ router.register('group', booking.views.GroupViewSet)
 router.register('subject', booking.views.SubjectViewSet)
 router.register('classroom', booking.views.ClassroomViewSet)
 router.register('timetable', booking.views.TimeTableViewSet, basename='timetable')
-#<<<<<<< Updated upstream
 router.register('studentdata', booking.views.UserViewSet, basename='studentdata')
-#=======
-router.register('studentdata', booking.views.UserViewSet, basename='student-data')
-router.register('grouplesson', booking.views.GroupLessonViewSet, basename='group-lesson')
-
-#>>>>>>> Stashed changes
+router.register('grouplesson', booking.views.GroupLessonViewSet, basename='grouplesson')
 
 # Authentication URLs
 router.register('session', authentication.views.SessionViewSet, basename='session')
