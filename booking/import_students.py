@@ -109,7 +109,7 @@ def get_group_name(group_name):
 
 """handles incoming student list"""
 def import_students(csv_file):
-    if type(_file) == InMemoryUploadedFile:
+    if type(csv_file) == InMemoryUploadedFile:
         csvf = StringIO(csv_file.read())
     else:
         csvf = StringIO(csv_file)
