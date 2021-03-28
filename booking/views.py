@@ -17,6 +17,7 @@ from .import_timetable import import_timetable
 from . import serializers
 from . import models
 
+period_in_minutes = {'1': 540, '2': 620, '3': 720, '4': 800, '5': 880, '6': 960, '7': 1040}
 
 class BookingViewSet(ReadOnlyModelViewSet):
     """Interacts with booking"""
@@ -65,7 +66,9 @@ class GroupLessonViewSet(ViewSet):
     def list(self, request):
         date = request.data.get('date')  # date of the lesson for a particular group
         group = request.data.get('group')  # group
+        minutes = request.data.get('minutes')
         bookings = models.Booking.objects.filter(date=date)  # filtering bookings through data
+        now_lesson = {"message": 'You are not supposed to be in any lesson right now'}
         cards = []
         for booking in bookings:  # given data's bookings
             try:
@@ -91,12 +94,20 @@ class GroupLessonViewSet(ViewSet):
                                    subject=subject
                                    )
                 cards.append(card)
+                lesson_minute = period_in_minutes[card.period]  # get lesson's minute from beginning of the day
+                if lesson_minute <= int(minutes) <= lesson_minute + 60:
+                    today_serializer = serializers.CardSerializer(card)
+                    now_lesson = today_serializer.data
         if len(cards) == 0:
-            msg = {'message': "Today you have no classess"}
+            msg = {'message': "Today you have no classes"}
             return Response(msg, status=status.HTTP_200_OK)
 
         serializer = serializers.CardSerializer(cards, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        ready_data = {
+            'today_lessons': serializer.data,
+            'now_lesson': now_lesson
+        }
+        return Response(ready_data, status=status.HTTP_200_OK)
 
 
 class TimeTableViewSet(ViewSet):

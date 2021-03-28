@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model, authenticate
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = get_user_model()
         fields = [
@@ -120,6 +119,7 @@ class SubjectSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'name',
+            'short'
         ]
 
 class GroupSerializer(serializers.ModelSerializer):
