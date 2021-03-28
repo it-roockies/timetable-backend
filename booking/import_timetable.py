@@ -20,8 +20,16 @@ def get_date_for_day(day, week: str):
     result = start + timedelta(days=DAYS_MAP[day])
     return result
 
+def delete_week_cards(week: str):
+    start = datetime.strptime(f"{week}-1", "%Y-W%W-%w").date()
+    end = start + timedelta(days=7)
+    bookings = models.Booking.objects.filter(date__range=[start, end])
+    bookings.delete()
+
 """takes file and stores information into database"""
 def import_timetable(week, _file):
+    delete_week_cards(week)
+
     if type(_file) == InMemoryUploadedFile:
         root = ET.fromstring(_file.read())
     else:
