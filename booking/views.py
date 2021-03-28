@@ -1,5 +1,5 @@
 
-from datetime import date
+from datetime import date, timedelta
 
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
@@ -104,12 +104,31 @@ class TimeTableViewSet(ViewSet):
 
     """ Returns table date for current week """
     def list(self, request):
-        today = date.today()  # get today's date
-        bookings = models.Booking.objects.filter(date=today)  # getting all bookings for today
+        booking_filter_kwars = {}
+        lesson_groups_filter_kwars = {}
+
+        if 'group' in request.query_params:
+            booking_filter_kwars['lesson__groups__id__in'] = request.query_params.getlist('group')
+            lesson_groups_filter_kwars['id__in'] = request.query_params.getlist('group')
+
+        if 'date' in request.query_params:
+            booking_filter_kwars['date__in'] = request.query_params.getlist('date')
+        elif 'week' in request.query_params:
+            week = request.query_params.get('week')
+            if week == 'current':
+                today = date.today() + timedelta(days=1)
+                start_date = today - timedelta(days=today.weekday())
+                end_date = start_date + timedelta(days=6)
+                booking_filter_kwars['date__range'] = [start_date, end_date]
+
+        if 'date' not in booking_filter_kwars and 'date__range' not in booking_filter_kwars:
+            booking_filter_kwars['date'] = date.today() # get today's date
+
+        bookings = models.Booking.objects.filter(**booking_filter_kwars)  # getting all bookings for today
 
         cards = []
         for booking in bookings:
-            for group in booking.lesson.groups.all():
+            for group in booking.lesson.groups.filter(**lesson_groups_filter_kwars):
                 cards.append({
                     "booking_id": booking.id,
                     "lesson_id": booking.lesson.id,
