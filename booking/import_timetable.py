@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as ET
 from datetime import date, timedelta, datetime
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from . import models
 
@@ -21,7 +22,10 @@ def get_date_for_day(day, week: str):
 
 """takes file and stores information into database"""
 def import_timetable(week, _file):
-    root = ET.fromstring(_file)
+    if type(_file) == InMemoryUploadedFile:
+        root = ET.fromstring(_file.read())
+    else:
+        root = ET.fromstring(_file)
 
     # Import Subjects
     for child in root.iter('subject'):

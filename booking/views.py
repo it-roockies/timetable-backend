@@ -112,7 +112,7 @@ class TimeTableViewSet(ViewSet):
             groups_filter_kwars['id__in'] = request.query_params.getlist('group')
 
         if 'date' in request.query_params:
-            booking_filter_kwars['date__in'] = request.query_params.getlist('date')
+            booking_filter_kwars['date'] = request.query_params.get('date')
         elif 'week' in request.query_params:
             week = request.query_params.get('week')
             if week == 'current':
@@ -122,7 +122,11 @@ class TimeTableViewSet(ViewSet):
                 booking_filter_kwars['date__range'] = [start_date, end_date]
 
         if 'date' not in booking_filter_kwars and 'date__range' not in booking_filter_kwars:
-            booking_filter_kwars['date'] = date.today() # get today's date
+            today = date.today() # get today's date
+            if today.weekday() == 6:
+                booking_filter_kwars['date'] = today + timedelta(days=1)
+            else:
+                booking_filter_kwars['date'] = today
 
         bookings = models.Booking.objects.filter(**booking_filter_kwars).order_by('date')  # getting all bookings for today
 

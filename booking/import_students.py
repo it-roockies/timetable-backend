@@ -2,6 +2,7 @@ import re
 import csv
 from io import StringIO
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from .models import Group
 
@@ -108,7 +109,10 @@ def get_group_name(group_name):
 
 """handles incoming student list"""
 def import_students(csv_file):
-    csvf = StringIO(csv_file)
+    if type(_file) == InMemoryUploadedFile:
+        csvf = StringIO(csv_file.read())
+    else:
+        csvf = StringIO(csv_file)
     csv_reader = csv.reader(csvf, delimiter=';')
     ctr = 0
 
