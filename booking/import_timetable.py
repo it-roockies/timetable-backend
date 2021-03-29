@@ -109,7 +109,6 @@ def import_timetable(week, _file):
         teacher_ids = child.attrib['teacherids'].split(',')
         group_ids = child.attrib['classids'].split(',')
         subject_object = models.Subject.objects.get(subject_id=subject_id)
-        #teacher_object = models.Teacher.objects.get(teacher_id=teacher_id)
         lesson, _ = models.Lesson.objects.get_or_create(
             lesson_id=lesson_id,
             defaults={

@@ -153,10 +153,10 @@ class TimeTableViewSet(ViewSet):
                         "id": booking.lesson.subject.id,
                         "name": booking.lesson.subject.short,
                     },
-                    "teacher": {
-                        "id": booking.lesson.teacher.id,
-                        "name": booking.lesson.teacher.short,
-                    },
+                    "teachers": [{
+                        "id": teacher.id,
+                        "name": teacher.short,
+                    } for teacher in booking.lesson.teachers.all()],
                     "group": {
                         "id": group.id,
                         "name": group.name,
