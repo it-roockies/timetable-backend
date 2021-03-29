@@ -59,13 +59,13 @@ class TimeLimitedQueryParamTokenAuthentication(TokenAuthentication):
         try:
             json_str = cipher_suite.decrypt(token)
         except InvalidToken:
-            raise AuthenticationFailed(_('Invalid token. Token should be enrypted data.'))
+            raise AuthenticationFailed(_('Invalid token. Token should be encrypted data.'))
 
         # read json data
         try:
             payload = json.loads(json_str)
         except json.decoder.JSONDecodeError:
-            raise AuthenticationFailed(_('Invalid token. Token should countain json data.'))
+            raise AuthenticationFailed(_('Invalid token. Token should contain json data.'))
 
         # validate expiration time
         try:

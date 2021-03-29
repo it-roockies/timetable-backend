@@ -35,7 +35,7 @@ class SessionViewSet(ViewSet):
     """Interacts with browser user"""
     def list(self, request):
         serializer = UserSerializer(request.user)
-        return Response({ "user": serializer.data })
+        return Response({"user": serializer.data})
 
     def create(self, request):
         serializer = AuthTokenSerializer(data=request.data, context={
@@ -47,7 +47,7 @@ class SessionViewSet(ViewSet):
         user = serializer.validated_data['user']
         user_serializer = UserSerializer(user)
         token, created = Token.objects.get_or_create(user=user)
-        return Response({ "user": user_serializer.data, "token": token.key })
+        return Response({"user": user_serializer.data, "token": token.key })
 
 
 class TelegramUserViewSet(ViewSet):

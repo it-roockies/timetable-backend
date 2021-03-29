@@ -106,18 +106,20 @@ def import_timetable(week, _file):
     for child in root.iter('lesson'):
         lesson_id = child.attrib['id']
         subject_id = child.attrib['subjectid']
-        teacher_id = child.attrib['teacherids']
+        teacher_ids = child.attrib['teacherids'].split(',')
         group_ids = child.attrib['classids'].split(',')
         subject_object = models.Subject.objects.get(subject_id=subject_id)
-        teacher_object = models.Teacher.objects.get(teacher_id=teacher_id)
+        #teacher_object = models.Teacher.objects.get(teacher_id=teacher_id)
         lesson, _ = models.Lesson.objects.get_or_create(
             lesson_id=lesson_id,
             defaults={
                 'subject': subject_object,
-                'teacher': teacher_object
+                #'teacher': teacher_object
             }
         )
         groups = models.Group.objects.filter(group_id__in=group_ids)
+        teachers = models.Teacher.objects.filter(teacher_id__in=teacher_ids)
+        lesson.teachers.set(teachers)
         lesson.groups.set(groups)
 
     # import Booking

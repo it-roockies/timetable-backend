@@ -110,17 +110,16 @@ def get_group_name(group_name):
 """handles incoming student list"""
 def import_students(csv_file):
     if type(csv_file) == InMemoryUploadedFile:
-        csvf = StringIO(csv_file.read())
+        csvf = StringIO(csv_file.read().decode('utf-8-sig'))
     else:
         csvf = StringIO(csv_file)
     csv_reader = csv.reader(csvf, delimiter=';')
     ctr = 0
-
     for row in csv_reader:
         if ctr == 0:
             ctr = 1
             continue
-
+        print(row)
         username = row[0]
         group_name = get_group_name(row[1])
 
@@ -138,7 +137,6 @@ def import_students(csv_file):
                 'last_name': last_name
             }
         )
-
         # Date of birth is provided
         if not created and user.date_of_birth is None and date_of_birth is not None:
             user.date_of_birth = date_of_birth

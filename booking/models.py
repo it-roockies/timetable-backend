@@ -98,11 +98,11 @@ class Classroom(models.Model):
 class Lesson(models.Model):
     lesson_id = models.CharField(max_length=255, unique=True)
     groups = models.ManyToManyField(Group)
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, default='teacher')
+    teachers = models.ManyToManyField(Teacher)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, default='subject')
 
     def __str__(self):
-        return f"{self.subject} ({self.teacher})"
+        return f"{self.subject} ({self.teachers})"
 
 class Booking(models.Model):
     period_of_lesson = [
