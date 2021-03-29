@@ -82,7 +82,13 @@ class GroupLessonViewSet(ViewSet):
                 date = booking.date
                 period = booking.period
                 subject = booking.lesson.subject.short
-                teacher = booking.lesson.teacher.short
+                teachers = booking.lesson.teachers.all()
+                teacher = ''
+                if len(teachers) != 1:
+                    for t in teachers:
+                        teacher += t.short
+                else:
+                    teacher = teachers[0].short
                 try:
                     classroom = booking.classroom.name
                 except:
@@ -102,8 +108,8 @@ class GroupLessonViewSet(ViewSet):
         if len(cards) == 0:
             msg = {'message': "Today you have no classes"}
             return Response(msg, status=status.HTTP_200_OK)
-
         serializer = serializers.CardSerializer(cards, many=True)
+
         ready_data = {
             'today_lessons': serializer.data,
             'now_lesson': now_lesson

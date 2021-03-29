@@ -12,9 +12,14 @@ class GroupSerializer(serializers.ModelSerializer):
             'id',
             'name',
         ]
+        extra_kwargs = {
+            'id': {'read_only': False},
+            'name': {'read_only': True}
+        }
+
 
 class UserSerializer(serializers.ModelSerializer):
-    group = GroupSerializer(many=False)
+    group = GroupSerializer()
     class Meta:
         model = get_user_model()
         fields = [
@@ -22,3 +27,20 @@ class UserSerializer(serializers.ModelSerializer):
             'group',
             'is_staff'
         ]
+
+    def validate_group(self, value):
+        """
+        Check that the group is exist.
+        """
+        if 'id' not in value:
+            raise serializers.ValidationError("group should contain id")
+        try:
+            return models.Group.objects.get(id=value.get('id'))
+        except models.Group.DoesNotExist:
+            raise serializers.ValidationError('Group does not exist')
+
+    def update(self, instance, validated_data):
+        print(validated_data.get('group', None))
+        instance.group = validated_data.get('group', instance.group)
+        instance.save()
+        return instance
