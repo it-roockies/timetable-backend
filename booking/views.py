@@ -10,7 +10,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet, ViewSet
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import FileUploadParser
-from rest_framework.permissions import BasePermission, IsAdminUser
+from rest_framework.permissions import BasePermission, IsAdminUser, AllowAny
 
 from .import_students import import_students
 from .import_timetable import import_timetable
@@ -26,6 +26,7 @@ class BookingViewSet(ReadOnlyModelViewSet):
 
 class TeacherViewSet(ReadOnlyModelViewSet):
     """Interacts with teachers"""
+    permission_classes = (AllowAny, )
     queryset = models.Teacher.objects.all()
     serializer_class = serializers.TeacherSerializer
 
@@ -117,7 +118,6 @@ class TimeTableViewSet(ViewSet):
     def list(self, request):
         booking_filter_kwars = {}
         groups_filter_kwars = {}
-
         if 'group' in request.query_params:
             booking_filter_kwars['lesson__groups__id__in'] = request.query_params.getlist('group')
             groups_filter_kwars['id__in'] = request.query_params.getlist('group')
