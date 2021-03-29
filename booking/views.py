@@ -122,8 +122,12 @@ class TimeTableViewSet(ViewSet):
             booking_filter_kwars['lesson__groups__id__in'] = request.query_params.getlist('group')
             groups_filter_kwars['id__in'] = request.query_params.getlist('group')
 
+        if 'teacher' in request.query_params:
+            booking_filter_kwars['lesson__teachers__id__in'] = request.query_params.getlist('teacher')
+
         if 'date' in request.query_params:
             booking_filter_kwars['date'] = request.query_params.get('date')
+
         elif 'week' in request.query_params:
             week = request.query_params.get('week')
             if week == 'current':
