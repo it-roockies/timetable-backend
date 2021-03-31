@@ -137,6 +137,9 @@ class TimeTableViewSet(ViewSet):
         if 'teacher' in request.query_params:
             filter_kwars['lesson__teachers__id__in'] = request.query_params.getlist('teacher')
 
+        if 'classroom' in request.query_params:
+            filter_kwars['classroom_id__in'] = request.query_params.getlist('classroom')
+
         if 'date' in request.query_params:
             filter_kwars['date'] = request.query_params.get('date')
 
