@@ -1,18 +1,66 @@
 [
     {
         "model": "booking.message",
-        "pk": 3,
+        "pk": 1,
         "fields": {
-            "message_id": "John",
-            "text": "Lennon"
+            "message_id": "START",
+            "text": "Hello, this bot serves you to assess teacher in TTPU."
         }
     },
     {
         "model": "booking.message",
         "pk": 2,
         "fields": {
-            "message_id": "Paula",
-            "text": "McCartney"
+            "message_id": "GET USERNAME",
+            "text": "Please enter your student id in numbers like: (u12259)\nIf you do not want to assess teachers simply click here /cancel. "
+        }
+    },
+    {
+        "model": "booking.message",
+        "pk": 3,
+        "fields": {
+            "message_id": "GET DATE_OF_BIRTH",
+            "text": "I see. Great, your date of birthday for registration (YYYY-MM-DD)."
+        }
+    },
+    {
+        "model": "booking.message",
+        "pk": 4,
+        "fields": {
+            "message_id": "GET GROUP",
+            "text": "Please choose in which group you are"
+        }
+    },
+    {
+        "model": "booking.message",
+        "pk": 5,
+        "fields": {
+            "message_id": "COMMENT SUBJECT",
+            "text": "Please choose which subject do you want to give your comments"
+        }
+    },
+    {
+        "model": "booking.message",
+        "pk": 6,
+        "fields": {
+            "message_id": "CANCEL",
+            "text": "Ok, If you want to add more value to TTPU we are here\n Just click here /start "
+        }
+    },
+    {
+        "model": "booking.message",
+        "pk": 7,
+        "fields": {
+            "message_id": "USER NOT FOUND",
+            "text": "Unfortunately, we could not find you in our system."
+        }
+    },
+    {
+        "model": "booking.message",
+        "pk": 8,
+        "fields": {
+            "message_id": "END",
+            "text": "Thank you for your time and effort. \nYou have added value to our growth. \nDo you want to give comment click here /start"
         }
     }
 ]
