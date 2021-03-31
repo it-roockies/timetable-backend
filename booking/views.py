@@ -17,7 +17,7 @@ from .import_timetable import import_timetable
 from . import serializers
 from . import models
 
-period_in_minutes = {'1': 540, '2': 620, '3': 720, '4': 800, '5': 880, '6': 960, '7': 1040}
+period_in_minutes = {0: 0, 1: 600, 2: 680, 3: 780, 4: 860, 5: 940, 6: 1020}
 
 class BookingViewSet(ReadOnlyModelViewSet):
     """Interacts with booking"""
@@ -101,8 +101,7 @@ class GroupLessonViewSet(ViewSet):
                                    subject=subject
                                    )
                 cards.append(card)
-                lesson_minute = period_in_minutes[card.period]  # get lesson's minute from beginning of the day
-                if lesson_minute <= int(minutes) <= lesson_minute + 60:
+                if period_in_minutes[int(card.period)-1] <= int(minutes) <= period_in_minutes[int(card.period)]:
                     today_serializer = serializers.CardSerializer(card)
                     now_lesson = today_serializer.data
         if len(cards) == 0:
