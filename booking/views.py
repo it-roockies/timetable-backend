@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import BasePermission, IsAdminUser, AllowAny
-
+from authentication.authentication import TelegramBotAuthentication
 from .import_students import import_students
 from .import_timetable import import_timetable
 from . import serializers
@@ -48,7 +48,11 @@ class SubjectViewSet(ReadOnlyModelViewSet):
     queryset = models.Subject.objects.all()
     serializer_class = serializers.SubjectSerializer
 
-
+class MessageViewSet(ReadOnlyModelViewSet):
+    """returns all available messages """
+    authentication_classes = [TelegramBotAuthentication]
+    queryset = models.Message.objects.all()
+    serializer_class = serializers.MessageSerializer
 
 class TimeTablePermission(BasePermission):
     """

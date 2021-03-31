@@ -1,0 +1,18 @@
+[
+    {
+        "model": "booking.message",
+        "pk": 3,
+        "fields": {
+            "message_id": "John",
+            "text": "Lennon"
+        }
+    },
+    {
+        "model": "booking.message",
+        "pk": 2,
+        "fields": {
+            "message_id": "Paula",
+            "text": "McCartney"
+        }
+    }
+]

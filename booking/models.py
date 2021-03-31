@@ -41,6 +41,14 @@ class User(AbstractUser):
         return self.username
 
 
+class Message(models.Model):
+    message_id = models.CharField(max_length=255, unique=True)
+    text = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.message_id
+
+
 class Group(models.Model):
     group_id = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)

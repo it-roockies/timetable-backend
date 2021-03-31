@@ -47,6 +47,16 @@ class UserSerializer(serializers.ModelSerializer):
 #
 #         return attrs
 
+class MessageSerializer(serializers.ModelSerializer):
+    """serializer for question model"""
+    class Meta:
+        model = models.Message
+        fields = [
+            'message_id',
+            'text'
+        ]
+
+
 class Classroom(serializers.ModelSerializer):
 
     class Meta:
@@ -63,7 +73,7 @@ class LessonSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'groups',
-            'teacher',
+            'teachers',
             'subject'
         ]
 

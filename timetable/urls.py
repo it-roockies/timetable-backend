@@ -17,6 +17,7 @@ router.register('classroom', booking.views.ClassroomViewSet)
 router.register('timetable', booking.views.TimeTableViewSet, basename='timetable')
 router.register('studentdata', booking.views.UserViewSet, basename='studentdata')
 router.register('grouplesson', booking.views.GroupLessonViewSet, basename='grouplesson')
+router.register('message', booking.views.MessageViewSet, basename='message')
 
 # Authentication URLs
 router.register('session', authentication.views.SessionViewSet, basename='session')
