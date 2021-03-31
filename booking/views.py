@@ -125,17 +125,15 @@ class TimeTableViewSet(ViewSet):
 
     """ Returns table date for current week """
     def list(self, request):
-        booking_filter_kwars = {}
-        groups_filter_kwars = {}
+        filter_kwars = {}
         if 'group' in request.query_params:
-            booking_filter_kwars['lesson__groups__id__in'] = request.query_params.getlist('group')
-            groups_filter_kwars['id__in'] = request.query_params.getlist('group')
+            filter_kwars['lesson__groups__id__in'] = request.query_params.getlist('group')
 
         if 'teacher' in request.query_params:
-            booking_filter_kwars['lesson__teachers__id__in'] = request.query_params.getlist('teacher')
+            filter_kwars['lesson__teachers__id__in'] = request.query_params.getlist('teacher')
 
         if 'date' in request.query_params:
-            booking_filter_kwars['date'] = request.query_params.get('date')
+            filter_kwars['date'] = request.query_params.get('date')
 
         elif 'week' in request.query_params:
             week = request.query_params.get('week')
@@ -143,50 +141,39 @@ class TimeTableViewSet(ViewSet):
                 tomorrow = date.today() + timedelta(days=1)
                 start_date = tomorrow - timedelta(days=tomorrow.weekday())
                 end_date = start_date + timedelta(days=6)
-                booking_filter_kwars['date__range'] = [start_date, end_date]
+                filter_kwars['date__range'] = [start_date, end_date]
 
-        if 'date' not in booking_filter_kwars and 'date__range' not in booking_filter_kwars:
+        if 'date' not in filter_kwars and 'date__range' not in filter_kwars:
             today = date.today() # get today's date
             if today.weekday() == 6:
-                booking_filter_kwars['date'] = today + timedelta(days=1)
+                filter_kwars['date'] = today + timedelta(days=1)
             else:
-                booking_filter_kwars['date'] = today
+                filter_kwars['date'] = today
 
-        bookings = models.Booking.objects.filter(**booking_filter_kwars).order_by('date')  # getting all bookings for today
+        bookings = [{
+            "id": booking.id,
+            "lesson_id": booking.lesson.id,
+            "date": booking.date,
+            "period": booking.period,
+            "subject": {
+                "id": booking.lesson.subject.id,
+                "name": booking.lesson.subject.short,
+            },
+            "teachers": [{
+                "id": teacher.id,
+                "name": teacher.short,
+            } for teacher in booking.lesson.teachers.all()],
+            "groups": [{
+                "id": group.id,
+                "name": group.name,
+            } for group in booking.lesson.groups.all()],
+            "classroom": {
+                "id": booking.classroom.id,
+                "name": booking.classroom.name,
+            } if booking.classroom else None,
+        } for booking in models.Booking.objects.filter(**filter_kwars).order_by('date')]
 
-        cards = []
-        for booking in bookings:
-            for group in booking.lesson.groups.filter(**groups_filter_kwars):
-                cards.append({
-                    "booking_id": booking.id,
-                    "lesson_id": booking.lesson.id,
-                    "date": booking.date,
-                    "period": booking.period,
-                    "subject": {
-                        "id": booking.lesson.subject.id,
-                        "name": booking.lesson.subject.short,
-                    },
-                    "teachers": [{
-                        "id": teacher.id,
-                        "name": teacher.short,
-                    } for teacher in booking.lesson.teachers.all()],
-                    "group": {
-                        "id": group.id,
-                        "name": group.name,
-                    },
-                    "classroom": {
-                        "id": booking.classroom.id,
-                        "name": booking.classroom.name,
-                    } if booking.classroom else None,
-                })
-
-        groups = models.Group.objects.filter(**groups_filter_kwars)
-        serializer = serializers.GroupSerializer(groups, many=True)
-
-        return Response({
-            "bookings": cards,
-            "groups": serializer.data,
-        }, status=status.HTTP_200_OK)
+        return Response(bookings, status=status.HTTP_200_OK)
 
     """Interacts with incoming 'xml'file """
     def create(self, request):
