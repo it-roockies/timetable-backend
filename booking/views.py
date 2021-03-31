@@ -24,6 +24,7 @@ class BookingViewSet(ReadOnlyModelViewSet):
     queryset = models.Booking.objects.all()
     serializer_class = serializers.BookingSerializer
 
+
 class TeacherViewSet(ReadOnlyModelViewSet):
     """Interacts with teachers"""
     permission_classes = (AllowAny, )
@@ -33,20 +34,24 @@ class TeacherViewSet(ReadOnlyModelViewSet):
 
 class GroupViewSet(ReadOnlyModelViewSet):
     """Interacts with groups"""
+    permission_classes = (AllowAny, )
     queryset = models.Group.objects.all()
     serializer_class = serializers.GroupSerializer
 
 
 class ClassroomViewSet(ReadOnlyModelViewSet):
     """Interacts with rooms"""
+    permission_classes = (AllowAny, )
     queryset = models.Classroom.objects.all()
     serializer_class = serializers.ClassroomSerializer
 
 
 class SubjectViewSet(ReadOnlyModelViewSet):
     """Interacts with rooms"""
+    permission_classes = (AllowAny, )
     queryset = models.Subject.objects.all()
     serializer_class = serializers.SubjectSerializer
+
 
 class MessageViewSet(ReadOnlyModelViewSet):
     """returns all available messages """
