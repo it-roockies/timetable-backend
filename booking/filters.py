@@ -1,4 +1,5 @@
 from datetime import datetime, date, timedelta
+from rest_framework.compat import coreapi, coreschema
 from rest_framework.filters import BaseFilterBackend
 
 
