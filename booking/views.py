@@ -1,7 +1,11 @@
 
-from datetime import date, timedelta
+from datetime import datetime, date, timedelta
 
+from django.core.cache import cache
 from django.contrib.auth import get_user_model
+from django.utils.decorators import method_decorator
+from django.views.decorators.http import condition
+
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import status
@@ -16,42 +20,47 @@ from .import_students import import_students
 from .import_timetable import import_timetable
 from . import serializers
 from . import models
+from . import filters
 
-period_in_minutes = {0: 0, 1: 600, 2: 680, 3: 780, 4: 860, 5: 940, 6: 1020}
 
-class BookingViewSet(ReadOnlyModelViewSet):
+def last_modified(request, *args, **kwargs):
+    return cache.get_or_set('last_modified', datetime.utcnow())
+
+class CachedReadOnlyModelViewSet(ReadOnlyModelViewSet):
+    @method_decorator(condition(last_modified_func=last_modified))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+class BookingViewSet(CachedReadOnlyModelViewSet):
     """Interacts with booking"""
+    permission_classes = (AllowAny, )
     queryset = models.Booking.objects.all()
     serializer_class = serializers.BookingSerializer
+    filter_backends = (filters.BookingWeekFilter, )
 
-
-class TeacherViewSet(ReadOnlyModelViewSet):
+class TeacherViewSet(CachedReadOnlyModelViewSet):
     """Interacts with teachers"""
     permission_classes = (AllowAny, )
     queryset = models.Teacher.objects.all()
     serializer_class = serializers.TeacherSerializer
 
-
-class GroupViewSet(ReadOnlyModelViewSet):
+class GroupViewSet(CachedReadOnlyModelViewSet):
     """Interacts with groups"""
     permission_classes = (AllowAny, )
     queryset = models.Group.objects.all()
     serializer_class = serializers.GroupSerializer
 
-
-class ClassroomViewSet(ReadOnlyModelViewSet):
+class ClassroomViewSet(CachedReadOnlyModelViewSet):
     """Interacts with rooms"""
     permission_classes = (AllowAny, )
     queryset = models.Classroom.objects.all()
     serializer_class = serializers.ClassroomSerializer
 
-
-class SubjectViewSet(ReadOnlyModelViewSet):
+class SubjectViewSet(CachedReadOnlyModelViewSet):
     """Interacts with rooms"""
     permission_classes = (AllowAny, )
     queryset = models.Subject.objects.all()
     serializer_class = serializers.SubjectSerializer
-
 
 class MessageViewSet(ReadOnlyModelViewSet):
     """returns all available messages """
@@ -69,6 +78,8 @@ class TimeTablePermission(BasePermission):
             return True
         return bool(request.user and request.user.is_staff)
 
+
+period_in_minutes = {0: 0, 1: 600, 2: 680, 3: 780, 4: 860, 5: 940, 6: 1020}
 class GroupLessonViewSet(ViewSet):
     """returns lessons to the user for given date"""
     # authentication_classes = []
@@ -137,6 +148,9 @@ class TimeTableViewSet(ViewSet):
         if 'teacher' in request.query_params:
             filter_kwars['lesson__teachers__id__in'] = request.query_params.getlist('teacher')
 
+        if 'classroom' in request.query_params:
+            filter_kwars['classroom_id__in'] = request.query_params.getlist('classroom')
+
         if 'date' in request.query_params:
             filter_kwars['date'] = request.query_params.get('date')
 
@@ -186,6 +200,7 @@ class TimeTableViewSet(ViewSet):
         _file = request.data.get('file')
 
         import_timetable(week, _file)
+        cache.delete('last_modified')
 
         msg = {'message': 'all bookings are successfully stored'}
         return Response(msg, status=status.HTTP_201_CREATED)

@@ -11,7 +11,7 @@
         "model": "booking.message",
         "pk": 2,
         "fields": {
-            "message_id": "GET USERNAME",
+            "message_id": "USERNAME",
             "text": "Please enter your student id in numbers like: (u12259)\nIf you do not want to assess teachers simply click here /cancel. "
         }
     },
@@ -19,7 +19,7 @@
         "model": "booking.message",
         "pk": 3,
         "fields": {
-            "message_id": "GET DATE_OF_BIRTH",
+            "message_id": "BIRTH",
             "text": "I see. Great, your date of birthday for registration (YYYY-MM-DD)."
         }
     },
@@ -27,7 +27,7 @@
         "model": "booking.message",
         "pk": 4,
         "fields": {
-            "message_id": "GET GROUP",
+            "message_id": "GROUP",
             "text": "Please choose in which group you are"
         }
     },
@@ -35,7 +35,7 @@
         "model": "booking.message",
         "pk": 5,
         "fields": {
-            "message_id": "COMMENT SUBJECT",
+            "message_id": "COMMENTSUBJECT",
             "text": "Please choose which subject do you want to give your comments"
         }
     },
@@ -51,7 +51,7 @@
         "model": "booking.message",
         "pk": 7,
         "fields": {
-            "message_id": "USER NOT FOUND",
+            "message_id": "NOTFOUND",
             "text": "Unfortunately, we could not find you in our system."
         }
     },

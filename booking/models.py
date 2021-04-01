@@ -75,20 +75,12 @@ class Teacher(models.Model):
     firstname = models.CharField(max_length=255)
     lastname = models.CharField(max_length=256)
     short = models.CharField(max_length=3)
-    subjects = models.ManyToManyField(Subject, related_name="teachers", through='TeacherSubject')
+    color = models.CharField(max_length=3)
 
     def __str__(self):
         """returns professors full name"""
         full_name = self.firstname + ' ' + self.lastname
         return full_name
-
-
-class TeacherSubject(models.Model):
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = (('teacher', 'subject'),)
 
 
 class Classroom(models.Model):
@@ -111,6 +103,7 @@ class Lesson(models.Model):
 
     def __str__(self):
         return f"{self.subject} ({self.teachers})"
+
 
 class Booking(models.Model):
     period_of_lesson = [
