@@ -119,6 +119,7 @@ class TeacherSerializer(serializers.ModelSerializer):
             'firstname',
             'lastname',
             'short',
+            'color'
         ]
 
 
