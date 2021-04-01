@@ -53,7 +53,7 @@ def import_timetable(week, _file):
                 'firstname': child.attrib['firstname'],
                 'lastname': child.attrib['lastname'],
                 'short': child.attrib['short'],
-                # for booking -> 'module': models.Module.objects.get(subject_id=child.attrib['subject'])
+                'color': child.attrib['color'],
             }
         )
 
