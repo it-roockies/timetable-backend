@@ -16,13 +16,14 @@ from .import_students import import_students
 from .import_timetable import import_timetable
 from . import serializers
 from . import models
-
-period_in_minutes = {0: 0, 1: 600, 2: 680, 3: 780, 4: 860, 5: 940, 6: 1020}
+from . import filters
 
 class BookingViewSet(ReadOnlyModelViewSet):
     """Interacts with booking"""
+    permission_classes = (AllowAny, )
     queryset = models.Booking.objects.all()
     serializer_class = serializers.BookingSerializer
+    filter_backends = (filters.BookingWeekFilter, )
 
 
 class TeacherViewSet(ReadOnlyModelViewSet):
@@ -69,6 +70,8 @@ class TimeTablePermission(BasePermission):
             return True
         return bool(request.user and request.user.is_staff)
 
+
+period_in_minutes = {0: 0, 1: 600, 2: 680, 3: 780, 4: 860, 5: 940, 6: 1020}
 class GroupLessonViewSet(ViewSet):
     """returns lessons to the user for given date"""
     # authentication_classes = []
