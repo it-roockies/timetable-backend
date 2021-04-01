@@ -88,8 +88,9 @@ class ClassroomSerializer(serializers.ModelSerializer):
 
 class BookingSerializer(serializers.ModelSerializer):
     """A serializer that helps us to serializer booking data """
-    lesson = LessonSerializer()
-    classroom = ClassroomSerializer()
+    teachers = serializers.SerializerMethodField()
+    groups = serializers.SerializerMethodField()
+    subject = serializers.IntegerField(source='lesson.subject_id')
 
     class Meta:
         model = models.Booking
@@ -97,9 +98,17 @@ class BookingSerializer(serializers.ModelSerializer):
             'id',
             'date',
             'period',
-            'lesson',
+            'teachers',
+            'groups',
+            'subject',
             'classroom'
         ]
+
+    def get_teachers(self, obj):
+        return [teacher.id for teacher in obj.lesson.teachers.all()]
+
+    def get_groups(self, obj):
+        return [group.id for group in obj.lesson.groups.all()]
 
 class CardSerializer(serializers.Serializer):
     period = serializers.CharField(max_length=255)

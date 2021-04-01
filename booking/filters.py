@@ -14,7 +14,9 @@ class BookingWeekFilter(BaseFilterBackend):
             return queryset.filter(date__range = [start_date, end_date])
 
         start_date = datetime.strptime(f"{week}-1", "%Y-W%W-%w").date()
-        end_date = start_date + timedelta(days=7)
+        print('start_date', start_date)
+        end_date = start_date + timedelta(days=6)
+        print('end_date', end_date)
         return queryset.filter(date__range=[start_date, end_date])
 
     def get_schema_fields(self, view):
