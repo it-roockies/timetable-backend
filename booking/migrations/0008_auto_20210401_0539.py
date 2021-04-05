@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='teacher',
             name='color',
-            field=models.CharField(default='#FFFFFF', max_length=3),
+            field=models.CharField(default='#FFFFFF', max_length=255),
             preserve_default=False,
         ),
         migrations.DeleteModel(

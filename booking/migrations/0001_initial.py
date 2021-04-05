@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('subject_id', models.CharField(max_length=255, unique=True)),
-                ('name', models.CharField(max_length=256)),
+                ('name', models.CharField(max_length=255)),
                 ('short', models.CharField(max_length=5)),
             ],
         ),
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('teacher_id', models.CharField(editable=False, max_length=255, unique=True)),
                 ('firstname', models.CharField(max_length=255)),
-                ('lastname', models.CharField(max_length=256)),
+                ('lastname', models.CharField(max_length=255)),
                 ('short', models.CharField(max_length=3)),
             ],
         ),

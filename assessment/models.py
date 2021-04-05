@@ -6,7 +6,7 @@ from booking.models import Subject, Teacher
 
 class Question(models.Model):
     """question object for users"""
-    question_text = models.CharField(max_length=256)
+    question_text = models.CharField(max_length=255)
     type_choices = [
         ("choice", "choice"),
         ("text", "text")

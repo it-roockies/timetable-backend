@@ -62,7 +62,7 @@ class Group(models.Model):
 
 class Subject(models.Model):
     subject_id = models.CharField(max_length=255, unique=True)
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=255)
     short = models.CharField(max_length=5)
 
     def __str__(self):
@@ -73,9 +73,9 @@ class Subject(models.Model):
 class Teacher(models.Model):
     teacher_id = models.CharField(max_length=255, unique=True, editable=False)
     firstname = models.CharField(max_length=255)
-    lastname = models.CharField(max_length=256)
+    lastname = models.CharField(max_length=255)
     short = models.CharField(max_length=3)
-    color = models.CharField(max_length=3)
+    color = models.CharField(max_length=255)
 
     def __str__(self):
         """returns professors full name"""
