@@ -113,27 +113,23 @@ class GroupLessonViewSet(ViewSet):
                     classroom = booking.classroom.name
                 except:
                     classroom = None
-                card = models.Card(period=period,
-                                   date=date,
-                                   classroom=classroom,
-                                   group=group,
-                                   teacher=teacher,
-                                   subject=subject
-                                   )
+                card = dict(period=period,
+                            date=date,
+                            classroom=classroom,
+                            group=group,
+                            teacher=teacher,
+                            subject=subject)
                 cards.append(card)
                 if period_in_minutes[int(card.period)-1] <= int(minutes) <= period_in_minutes[int(card.period)]:
-                    today_serializer = serializers.CardSerializer(card)
-                    now_lesson = today_serializer.data
+                    now_lesson = card
         if len(cards) == 0:
             msg = {'message': "Today you have no classes"}
             return Response(msg, status=status.HTTP_200_OK)
-        serializer = serializers.CardSerializer(cards, many=True)
 
-        ready_data = {
-            'today_lessons': serializer.data,
+        return Response({
+            'today_lessons': cards,
             'now_lesson': now_lesson
-        }
-        return Response(ready_data, status=status.HTTP_200_OK)
+        }, status=status.HTTP_200_OK)
 
 
 class TimeTableViewSet(ViewSet):

@@ -57,33 +57,6 @@ def import_timetable(week, _file):
             }
         )
 
-    # Import days
-    for child in root.iter('daysdef'):
-        models.Day.objects.get_or_create(
-            day_id=child.attrib['id'],
-            defaults={
-                'day': child.attrib['days']
-            }
-        )
-
-    # Import Weeks
-    for child in root.iter('weeksdef'):
-        models.Week.objects.get_or_create(
-            week_id=child.attrib['id'],
-            defaults={
-                'week': child.attrib['weeks']
-            }
-        )
-
-    # Import Terms
-    for child in root.iter('termsdef'):
-        models.Term.objects.get_or_create(
-            term_id=child.attrib['id'],
-            defaults={
-                'term': child.attrib['terms']
-            }
-        )
-
     # import Groups
     for child in root.iter('class'):
         models.Group.objects.get_or_create(
@@ -93,7 +66,7 @@ def import_timetable(week, _file):
             }
         )
 
-    # import classroom
+    # import Classrooms
     for child in root.iter('classroom'):
         models.Classroom.objects.get_or_create(
             classroom_id=child.attrib['id'],
@@ -102,7 +75,7 @@ def import_timetable(week, _file):
             }
         )
 
-    # import lesson
+    # import Lessons
     for child in root.iter('lesson'):
         lesson_id = child.attrib['id']
         subject_id = child.attrib['subjectid']

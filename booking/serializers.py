@@ -110,15 +110,6 @@ class BookingSerializer(serializers.ModelSerializer):
     def get_groups(self, obj):
         return [group.id for group in obj.lesson.groups.all()]
 
-class CardSerializer(serializers.Serializer):
-    period = serializers.CharField(max_length=255)
-    date = serializers.DateField()
-    classroom = serializers.CharField(max_length=255)
-    teacher = serializers.CharField(max_length=255)
-    subject = serializers.CharField(max_length=255)
-    group = serializers.CharField(max_length=255)
-
-
 class TeacherSerializer(serializers.ModelSerializer):
     """Interacts with Tutor data"""
     class Meta:
