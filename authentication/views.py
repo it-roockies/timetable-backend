@@ -6,6 +6,7 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -78,7 +79,7 @@ class TelegramBotViewSet(ViewSet):
         model = get_user_model()
         try:
             user = model.objects.get(username=username, date_of_birth=date_of_birth, telegram_id__isnull=True)
-        except model.DoesNotExist:
+        except (model.DoesNotExist, ValidationError):
             raise AuthenticationFailed(_('Invalid user.'))
 
         if not user.is_active:
