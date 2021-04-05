@@ -55,7 +55,8 @@ jobs:
           script: |
             cd ${{ secrets.DEPLOY_REMOTE_TARGET }}
             source venv/bin/activate
-            pip install timetable-1.0.0-0-py37-none-any.whl  -U
+            pip install timetable-1.0.0-0-py37-none-any.whl -U
+            rm timetable-1.0.0-0-py37-none-any.whl
             python manage.py migrate --no-input
             python manage.py collectstatic --no-input
             sudo supervisorctl restart timetable-backend
