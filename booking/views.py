@@ -131,6 +131,21 @@ class GroupLessonViewSet(ViewSet):
             'now_lesson': now_lesson
         }, status=status.HTTP_200_OK)
 
+class NotifyUserViewSet(ViewSet):
+    """helps to notify student about lesson"""
+    authentication_classes = [TelegramBotAuthentication]
+    def list(self, request):
+        period = request.data.get('period')
+        today = request.data.get('date')
+        bookings = models.Booking.objects.filter(date=today, period=period)
+        data = []
+        for booking in bookings:  # all lessons for a given period
+            ready_dic = {}
+            ready_dic['teachers'] = [teacher.short for teacher in booking.lesson.teachers.all()]  # getting teacher
+            ready_dic['subject'] = booking.lesson.subject.short
+            ready_dic['telegram_ids'] = [user.telegram_id for user in models.User.objects.filter(group__in=booking.lesson.groups.all(), telegram_id__isnull=False)]
+            data.append(ready_dic)
+        return Response(data, status=status.HTTP_200_OK)
 
 class TimeTableViewSet(ViewSet):
     permission_classes = (TimeTablePermission, )

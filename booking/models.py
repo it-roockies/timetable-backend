@@ -115,6 +115,9 @@ class Booking(models.Model):
         ("6", '16:00-17:00')
     ]
 
+
+
+
     date = models.DateField()
     period = models.CharField(max_length=1, choices=period_of_lesson, default='1')
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, default='lesson')
