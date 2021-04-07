@@ -120,7 +120,7 @@ class GroupLessonViewSet(ViewSet):
                             teacher=teacher,
                             subject=subject)
                 cards.append(card)
-                if period_in_minutes[int(card.period)-1] <= int(minutes) <= period_in_minutes[int(card.period)]:
+                if period_in_minutes[int(card['period'])-1] <= int(minutes) <= period_in_minutes[int(card['period'])]:
                     now_lesson = card
         if len(cards) == 0:
             msg = {'message': "Today you have no classes"}
