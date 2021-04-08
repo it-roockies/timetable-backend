@@ -79,7 +79,8 @@ class TimeTablePermission(BasePermission):
         return bool(request.user and request.user.is_staff)
 
 
-period_in_minutes = {0: 0, 1: 600, 2: 680, 3: 780, 4: 860, 5: 940, 6: 1020}
+period_in_minutes = {0: 0, 1: 600, 2: 680, 3: 780, 4: 860, 5: 940, 6: 1020, 7: 1100}
+period_in_time = {1: "09:00-10:00", 2: "10:20-11:20", 3: "12:00-13:00", 4: "13:20-14:20", 5: "14:40-15:40", 6: "16:00-17:00", 7: "17:20-18:20"}
 class GroupLessonViewSet(ViewSet):
     """returns lessons to the user for given date"""
     # authentication_classes = []
@@ -122,6 +123,7 @@ class GroupLessonViewSet(ViewSet):
                 cards.append(card)
                 if period_in_minutes[int(card['period'])-1] <= int(minutes) <= period_in_minutes[int(card['period'])]:
                     now_lesson = card
+                card['time'] = period_in_time[int(card['period'])]  # get time for lesson
         if len(cards) == 0:
             msg = {'message': "Today you have no classes"}
             return Response(msg, status=status.HTTP_200_OK)
