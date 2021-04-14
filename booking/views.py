@@ -18,6 +18,7 @@ from rest_framework.permissions import BasePermission, IsAdminUser, AllowAny
 from authentication.authentication import TelegramBotAuthentication
 from .import_students import import_students
 from .import_timetable import import_timetable
+from .import_teacherlesson import import_teacher_lesson
 from . import serializers
 from . import models
 from . import filters
@@ -127,6 +128,14 @@ class GroupLessonViewSet(ViewSet):
         if len(cards) == 0:
             msg = {'message': "Today you have no classes"}
             return Response(msg, status=status.HTTP_200_OK)
+        # sorting lessons by its period with insertion sorting algorithm
+        for j in range(1, len(cards)):
+            key = cards[j]['period']
+            i = j - 1
+            while (i >= 0 and int(cards[i]['period']) > int(key)):
+                cards[i + 1]['period'] = cards[i]['period']
+                i -= 1
+            cards[i + 1]['period'] = key
 
         return Response({
             'today_lessons': cards,
@@ -238,3 +247,32 @@ class UserViewSet(ViewSet):
 
         msg = {"message": "student list have successfully been stored"}
         return Response(msg, status=status.HTTP_201_CREATED)
+
+class TeacherSubjectViewSet(ViewSet):
+    """importing teachers"""
+    def create(self, request):
+        csv_file = request.data.get('file')
+        import_teacher_lesson(csv_file)
+        return Response(status=status.HTTP_200_OK)
+
+class LevelSubjectViewSet(ViewSet):
+    def list(self, request):
+        level = request.data.get('level')
+        term = request.data.get('term')
+        objects = models.TeacherSubject.objects.filter(level=level, term=term)
+        subjects = []
+        for obj in objects:
+            if obj.subject.name not in subjects:
+                subjects.append(obj.subject.name)
+        data = dict(subjects=subjects)
+        return Response(data, status=status.HTTP_200_OK)
+class LevelTeacherViewSet(ViewSet):
+    def list(self, request):
+        subject = request.data.get('subject')
+        objects = models.TeacherSubject.objects.filter(subject__name=subject)
+        teachers = []
+        for obj in objects:
+            if obj.teacher.firstname + ' ' + obj.teacher.lastname not in teachers:
+                teachers.append(obj.teacher.firstname + ' ' + obj.teacher.lastname)
+        data = dict(teachers=teachers)
+        return Response(data, status=status.HTTP_200_OK)

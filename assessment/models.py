@@ -1,7 +1,18 @@
 from django.db import models
 from django.conf import settings
-
+from django.core.exceptions import ValidationError
 from booking.models import Subject, Teacher
+import json
+def check_json(value):
+    print(value)
+
+    try:
+        incoming_value = json.loads(value)
+        is_list = isinstance(incoming_value, list)
+        if not is_list:
+            raise ValidationError('You have entered invalid type of data.')
+    except:
+        raise ValidationError('You have entered invalid type of data.')
 
 
 class Question(models.Model):
@@ -22,7 +33,7 @@ class Question(models.Model):
 
 class Choice(models.Model):
     name = models.CharField(max_length=255)
-    variant = models.CharField(max_length=255)
+    variant = models.CharField(max_length=255, validators=[check_json])
 
     def __str__(self):
         return self.name

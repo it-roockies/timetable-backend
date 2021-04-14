@@ -19,6 +19,9 @@ router.register('studentdata', booking.views.UserViewSet, basename='studentdata'
 router.register('grouplesson', booking.views.GroupLessonViewSet, basename='grouplesson')
 router.register('message', booking.views.MessageViewSet, basename='message')
 router.register('notify', booking.views.NotifyUserViewSet, basename='notify')
+router.register('teachersubject', booking.views.TeacherSubjectViewSet, basename='teacher-subject')
+router.register('levelsubject', booking.views.LevelSubjectViewSet, basename='level-subject')
+router.register('levelteacher', booking.views.LevelTeacherViewSet, basename='level-teacher')
 
 # Authentication URLs
 router.register('session', authentication.views.SessionViewSet, basename='session')

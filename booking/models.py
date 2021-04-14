@@ -63,25 +63,30 @@ class Group(models.Model):
 class Subject(models.Model):
     subject_id = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
-    short = models.CharField(max_length=255)
+    short = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         """returns module name"""
-        return self.short
+        return self.name
 
 
 class Teacher(models.Model):
     teacher_id = models.CharField(max_length=255, unique=True, editable=False)
     firstname = models.CharField(max_length=255)
     lastname = models.CharField(max_length=255)
-    short = models.CharField(max_length=255)
-    color = models.CharField(max_length=255)
+    short = models.CharField(max_length=255, blank=True, null=True)
+    color = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         """returns professors full name"""
         full_name = self.firstname + ' ' + self.lastname
         return full_name
 
+class TeacherSubject(models.Model):
+    level = models.IntegerField(blank=True, null=True)
+    term = models.IntegerField(blank=True, null=True)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, blank=True, null=True)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
 
 class Classroom(models.Model):
     classroom_id = models.CharField(max_length=255, unique=True)
