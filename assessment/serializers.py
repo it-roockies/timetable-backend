@@ -6,7 +6,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ['id', 'question_text', 'choice']
+        fields = ['id', 'question_text', 'choice', 'quick_mode']
 
 
 class AnswerSerializer(serializers.ModelSerializer):

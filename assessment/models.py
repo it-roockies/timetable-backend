@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from booking.models import Subject, Teacher
 import json
 def check_json(value):
-    print(value)
 
     try:
         incoming_value = json.loads(value)
@@ -24,7 +23,7 @@ class Question(models.Model):
     ]
     question_type = models.CharField(max_length=20, choices=type_choices)
     choice = models.ForeignKey("Choice", related_name="choice", on_delete=models.CASCADE, blank=True, null=True)
-
+    quick_mode = models.BooleanField(default=False)
 
 
     def __str__(self):
