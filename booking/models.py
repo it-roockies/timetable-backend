@@ -110,6 +110,11 @@ class Lesson(models.Model):
         return f"{self.subject} ({self.teachers})"
 
 
+class Event(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, null=True, blank=True)
+
 class Booking(models.Model):
     period_of_lesson = [
         ("1", '9:00-10:00'),
@@ -125,5 +130,6 @@ class Booking(models.Model):
 
     date = models.DateField()
     period = models.CharField(max_length=1, choices=period_of_lesson, default='1')
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, default='lesson')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, default='lesson', blank=True, null=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, blank=True, null=True)
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, blank=True, null=True)

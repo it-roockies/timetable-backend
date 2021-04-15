@@ -280,10 +280,11 @@ class LevelTeacherViewSet(ViewSet):
 class AvailableRoomViewSet(ViewSet):
     def list(self, request):
         """returns all available rooms for today"""
-        start_date = date.today()
-        end_date = start_date + timedelta(5-start_date.weekday())
+        # start_date = date.today()
+        # end_date = start_date + timedelta(5-start_date.weekday())
+        day = request.data.get('date')
         # list of rooms which key is classroom and period__max and value is id and actual period
-        rooms = list(models.Booking.objects.filter(date__range=(start_date, end_date)).values('classroom', 'date').annotate(Max('period')))
+        rooms = list(models.Booking.objects.filter(date=day).values('classroom', 'date').annotate(Max('period')))
         # filter available rooms
         available_rooms = []
         for room in rooms:
