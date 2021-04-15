@@ -22,6 +22,7 @@ router.register('notify', booking.views.NotifyUserViewSet, basename='notify')
 router.register('teachersubject', booking.views.TeacherSubjectViewSet, basename='teacher-subject')
 router.register('levelsubject', booking.views.LevelSubjectViewSet, basename='level-subject')
 router.register('levelteacher', booking.views.LevelTeacherViewSet, basename='level-teacher')
+router.register('freeroom', booking.views.AvailableRoomViewSet, basename='free-room')
 
 # Authentication URLs
 router.register('session', authentication.views.SessionViewSet, basename='session')

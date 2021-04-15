@@ -22,7 +22,7 @@ from .import_teacherlesson import import_teacher_lesson
 from . import serializers
 from . import models
 from . import filters
-
+from django.db.models import Max
 
 def last_modified(request, *args, **kwargs):
     return cache.get_or_set('last_modified', datetime.utcnow())
@@ -172,7 +172,7 @@ class TimeTableViewSet(ViewSet):
 
         if 'classroom' in request.query_params:
             filter_kwars['classroom_id__in'] = request.query_params.getlist('classroom')
-
+            print(request.query_params.getlist)
         if 'date' in request.query_params:
             filter_kwars['date'] = request.query_params.get('date')
 
@@ -276,3 +276,21 @@ class LevelTeacherViewSet(ViewSet):
                 teachers.append(obj.teacher.firstname + ' ' + obj.teacher.lastname)
         data = dict(teachers=teachers)
         return Response(data, status=status.HTTP_200_OK)
+
+class AvailableRoomViewSet(ViewSet):
+    def list(self, request):
+        """returns all available rooms for today"""
+        start_date = date.today()
+        end_date = start_date + timedelta(5-start_date.weekday())
+        # list of rooms which key is classroom and period__max and value is id and actual period
+        rooms = list(models.Booking.objects.filter(date__range=(start_date, end_date)).values('classroom', 'date').annotate(Max('period')))
+        # filter available rooms
+        available_rooms = []
+        for room in rooms:
+            if int(room['period__max']) < 6:
+                classroom = models.Classroom.objects.get(id=room['classroom']).name
+                if (classroom[:1].isnumeric() or classroom[:3] == 'LAB'):
+                    available_rooms.append(dict(classroom=classroom,
+                                                starting_time=period_in_time[int(room['period__max'])+1][:5],
+                                                date=room['date']))
+        return Response(available_rooms, status=status.HTTP_200_OK)
