@@ -23,3 +23,6 @@ admin.site.register(models.Teacher, TeacherAdmin)
 admin.site.register(models.Lesson)
 admin.site.register(models.Message)
 admin.site.register(models.TeacherSubject)
+admin.site.register(models.Event)
+admin.site.register(models.EventMember)
+

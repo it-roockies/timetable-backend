@@ -141,3 +141,11 @@ class GroupSerializer(serializers.ModelSerializer):
             'id',
             'name',
         ]
+class EventSerializer(serializers.ModelSerializer):
+    """Interacts with Event data"""
+    class Meta:
+        model = models.Event
+        fields = [
+            'name',
+            'special'
+        ]

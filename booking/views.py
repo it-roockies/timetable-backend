@@ -295,3 +295,17 @@ class AvailableRoomViewSet(ViewSet):
                                                 starting_time=period_in_time[int(room['period__max'])+1][:5],
                                                 date=room['date']))
         return Response(available_rooms, status=status.HTTP_200_OK)
+
+
+class EventViewSet(ViewSet):
+    """Interacts with event object"""
+    def create(self, request):
+        """Creates and saves a new event"""
+        serializer = serializers.EventSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser
-
+from django.utils import timezone
 
 # Create your models here.
 
@@ -111,9 +111,25 @@ class Lesson(models.Model):
 
 
 class Event(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    from_time = models.DateTimeField(default=timezone.now)
+    to_time = models.DateTimeField(default=timezone.now)
+    special = models.BooleanField(default=False)
+
+    def __str__(self):
+        """returns object as string representation"""
+        return self.name
+
+
+class EventMember(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    responsible = models.BooleanField(default=False)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+
+    def __str__(self):
+        """returns object as string representation by user"""
+        return self.user
+
 
 class Booking(models.Model):
     period_of_lesson = [

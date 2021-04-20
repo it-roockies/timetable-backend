@@ -62,5 +62,13 @@
             "message_id": "END",
             "text": "Thank you for your time and effort. \nYou have added value to our growth. \nDo you want to give comment click here /start"
         }
+    },
+    {
+        "model": "booking.message",
+        "pk": 9,
+        "fields": {
+            "message_id": "BIRTH_AGAIN",
+            "text": "Please try it again, your date of birthday for registration (YYYY-MM-DD)."
+        }
     }
 ]
