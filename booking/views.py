@@ -128,14 +128,8 @@ class GroupLessonViewSet(ViewSet):
         if len(cards) == 0:
             msg = {'message': "Today you have no classes"}
             return Response(msg, status=status.HTTP_200_OK)
-        # sorting lessons by its period with insertion sorting algorithm
-        for j in range(1, len(cards)):
-            key = cards[j]['period']
-            i = j - 1
-            while (i >= 0 and int(cards[i]['period']) > int(key)):
-                cards[i + 1]['period'] = cards[i]['period']
-                i -= 1
-            cards[i + 1]['period'] = key
+        # sorting lessons by period
+        cards = sorted(cards, key=lambda card: card['period'])
 
         return Response({
             'today_lessons': cards,
