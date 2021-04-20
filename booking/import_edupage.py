@@ -5,6 +5,7 @@ from datetime import date, timedelta, datetime
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from . import models
+from django.db.models import Count
 
 
 logger = logging.getLogger(__name__)
@@ -113,17 +114,17 @@ def import_timetable():
             .get()
         )
 
-    # import Booking
-    for child in root.iter("card"):
-        booking_date = get_date_for_day(day=child.attrib["days"], week=week)
-        period = child.attrib["period"]
-        classroom_id = child.attrib["classroomids"]
-        lesson_id = child.attrib["lessonid"]
-        lesson_object = models.Lesson.objects.get(lesson_id=lesson_id)
-        if classroom_id:
-            classroom_object = models.Classroom.objects.get(classroom_id=classroom_id)
-            models.Booking.objects.get_or_create(
-                date=booking_date, period=period, lesson=lesson_object, classroom=classroom_object
-            )
-        else:
-            models.Booking.objects.get_or_create(date=booking_date, period=period, lesson=lesson_object, classroom=None)
+    # # import Booking
+    # for child in root.iter("card"):
+    #     booking_date = get_date_for_day(day=child.attrib["days"], week=week)
+    #     period = child.attrib["period"]
+    #     classroom_id = child.attrib["classroomids"]
+    #     lesson_id = child.attrib["lessonid"]
+    #     lesson_object = models.Lesson.objects.get(lesson_id=lesson_id)
+    #     if classroom_id:
+    #         classroom_object = models.Classroom.objects.get(classroom_id=classroom_id)
+    #         models.Booking.objects.get_or_create(
+    #             date=booking_date, period=period, lesson=lesson_object, classroom=classroom_object
+    #         )
+    #     else:
+    #         models.Booking.objects.get_or_create(date=booking_date, period=period, lesson=lesson_object, classroom=None)

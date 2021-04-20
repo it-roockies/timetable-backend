@@ -147,10 +147,10 @@ class GroupLessonViewSet(ViewSet):
                     group=group,
                     teacher=teacher,
                     subject=subject,
-                    time=period_in_time[int(card["period"])],  # get time for lesson
+                    time=period_in_time[int(period)],  # get time for lesson
                 )
                 cards.append(card)
-                if period_in_minutes[int(card["period"]) - 1] <= int(minutes) <= period_in_minutes[int(card["period"])]:
+                if period_in_minutes[int(period) - 1] <= int(minutes) <= period_in_minutes[int(period)]:
                     now_lesson = card
 
         if len(cards) == 0:
