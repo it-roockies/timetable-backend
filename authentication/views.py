@@ -72,22 +72,19 @@ class TelegramBotViewSet(ViewSet):
     authentication_classes = (TelegramBotAuthentication, )
 
     def create(self, request):
-        telegram_id = request.data['telegram_id']
-        username = request.data['username']
-        date_of_birth = request.data['date_of_birth']
-        key = request.data['key']
-        print(key)
+        telegram_id = request.data.get('telegram_id')
+        username = request.data.get('username')
+        date_of_birth = request.data.get('date_of_birth')
+        key = request.data.get('key')
         model = get_user_model()
         try:
             user = model.objects.get(username=username, telegram_id__isnull=True)
-            print(user.date_of_birth)
         except (model.DoesNotExist, ValidationError):
             raise AuthenticationFailed(_('Invalid user.'))
         if not user.date_of_birth:
-            if key != 1:
+            if key != '1':
                 raise AuthenticationFailed(_('Invalid user!'))
             user.date_of_birth = date_of_birth
-        print(user.date_of_birth, date_of_birth)
         if str(user.date_of_birth) != str(date_of_birth):
             raise AuthenticationFailed(_('Invalid user.'))
         if not user.is_active:
