@@ -191,6 +191,8 @@ class TimeTableViewSet(ViewSet):
 
     def list(self, request):
         filter_kwars = {}
+        if "id" in request.query_params:
+            filter_kwars["id__in"] = request.query_params.getlist("id")
         if "group" in request.query_params:
             filter_kwars["lesson__groups__id__in"] = request.query_params.getlist("group")
 
