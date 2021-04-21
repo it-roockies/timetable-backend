@@ -41,11 +41,7 @@ class BookingViewSet(CachedReadOnlyModelViewSet):
     permission_classes = (AllowAny,)
     queryset = models.Booking.objects.all()
     serializer_class = serializers.BookingSerializer
-    filter_backends = (
-        DjangoFilterBackend,
-        filters.BookingWeekFilter,
-    )
-    filterset_fields = ["id"]
+    filter_backends = (filters.BookingWeekFilter,)
 
 
 class TeacherViewSet(CachedReadOnlyModelViewSet):
