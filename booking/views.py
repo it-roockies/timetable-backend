@@ -4,6 +4,7 @@ from django.core.cache import cache
 from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import condition
+from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
@@ -40,7 +41,11 @@ class BookingViewSet(CachedReadOnlyModelViewSet):
     permission_classes = (AllowAny,)
     queryset = models.Booking.objects.all()
     serializer_class = serializers.BookingSerializer
-    filter_backends = (filters.BookingWeekFilter,)
+    filter_backends = (
+        DjangoFilterBackend,
+        filters.BookingWeekFilter,
+    )
+    filterset_fields = ["id"]
 
 
 class TeacherViewSet(CachedReadOnlyModelViewSet):
@@ -215,7 +220,7 @@ class TimeTableViewSet(ViewSet):
             end_date = start_date + timedelta(days=6)
             filter_kwars["date__range"] = [start_date, end_date]
 
-        if "date" not in filter_kwars and "date__range" not in filter_kwars:
+        if "date" not in filter_kwars and "date__range" not in filter_kwars and "id__in" not in filter_kwars:
             today = date.today()  # get today's date
             if today.weekday() == 6:
                 filter_kwars["date"] = today + timedelta(days=1)
