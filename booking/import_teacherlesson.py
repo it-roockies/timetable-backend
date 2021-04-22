@@ -91,9 +91,9 @@ def import_teacher_lesson(csv_file):
                     firstname = teacher.split(' ')[0]
                     lastname = teacher.split(' ')[1]
                 print(firstname, lastname)
-                teacher_obj = models.Teacher.objects.get(firstname__iexact=firstname, lastname__iexact=lastname)
+                teacher_obj = models.Teacher.objects.filter(firstname__iexact=firstname, lastname__iexact=lastname)[0]
                 print(subject)
-                subject_obj = models.Subject.objects.get(name__iexact=subject)
+                subject_obj = models.Subject.objects.filter(name__iexact=subject)[0]
                 models.TeacherSubject.objects.create(
                     level=level,
                     term=term,
