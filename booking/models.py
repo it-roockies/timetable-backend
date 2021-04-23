@@ -35,7 +35,7 @@ class User(AbstractUser):
     telegram_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
     date_of_birth = models.DateField(max_length=255, blank=True, null=True)
     group = models.ForeignKey('Group', on_delete=models.CASCADE, null=True, blank=True)
-
+    attended_questionnaire = models.IntegerField(default=0)
 
     def __str__(self):
         return self.username

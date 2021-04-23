@@ -57,7 +57,13 @@ class TelegramUserViewSet(ViewSet):
 
     def create(self, request):
         group = request.data.get('group')
-        serializer = UserSerializer(request.user, data={"group": {"id": group}}, partial=True)
+        attended_questionnaire = request.data.get('attended_questionnaire')
+        data = {
+            "group": {"id": group},
+            "attended_questionnaire": attended_questionnaire
+        }
+        serializer = UserSerializer(request.user, data=data, partial=True)
+        print(serializer.is_valid())
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)

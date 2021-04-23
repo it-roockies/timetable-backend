@@ -25,6 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'group',
+            'attended_questionnaire',
             'is_staff'
         ]
 
@@ -40,7 +41,8 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Group does not exist')
 
     def update(self, instance, validated_data):
-        print(validated_data.get('group', None))
+        print(validated_data)
         instance.group = validated_data.get('group', instance.group)
+        instance.attended_questionnaire += validated_data.get('attended_questionnaire', instance.attended_questionnaire)
         instance.save()
         return instance

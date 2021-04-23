@@ -3,7 +3,7 @@ from .models import Question, Answer, Choice
 
 
 class AnswerAdmin(admin.ModelAdmin):
-    list_display = ("user", "question", "answer")
+    list_display = ("user", "date", "question", "answer")
     list_filter = ("user", "question", "teacher", "subject")
     readonly_fields = ("user", "question", "teacher", "subject", "answer", "date")
 
