@@ -18,7 +18,7 @@ from rest_framework.permissions import BasePermission, IsAdminUser, AllowAny
 from authentication.authentication import TelegramBotAuthentication
 from .import_students import import_students
 from .import_timetable import import_timetable
-from .import_teacherlesson import import_teacher_lesson
+from .import_teacherlesson import import_teacher_lesson, import_py_teacher_subjects
 from . import serializers
 from . import models
 from . import filters
@@ -361,3 +361,9 @@ class EventViewSet(ViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PYStudentViewSet(ViewSet):
+    def create(self, request):
+        csv_file = request.data.get("file")
+        import_py_teacher_subjects(csv_file)
+        return Response(status=status.HTTP_201_CREATED)

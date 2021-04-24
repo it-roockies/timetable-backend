@@ -8,6 +8,28 @@ from io import StringIO
 def code():
     x = uuid.uuid1()
     return str(x)
+def import_py_teacher_subjects(csv_file):
+    if type(csv_file) == InMemoryUploadedFile:
+        csvf = StringIO(csv_file.read().decode('utf-8-sig'))
+    else:
+        csvf = StringIO(csv_file)
+    reader = csv.reader(csvf, delimiter=',')
+    for row in reader:
+        subject = row[0]
+        print(subject)
+        for teacher in row[1:]:
+            print(teacher, subject)
+            if teacher != '':
+                teacher_object = models.Teacher.objects.filter(short__iexact=teacher)[0]
+                subject_object = models.Subject.objects.filter(name__iexact=subject)[0]
+                models.TeacherSubject.objects.create(
+                    level=0,
+                    term=1,
+                    teacher=teacher_object,
+                    subject=subject_object
+                )
+
+
 
 
 def import_teacher_lesson(csv_file):
