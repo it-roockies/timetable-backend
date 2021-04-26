@@ -79,8 +79,6 @@ def delete_week_cards(week: str):
 
 
 def import_edupage(week):
-    delete_week_cards(week)
-
     # Find timetable id for given week
     timetables = get_timetables()
     datefrom = get_week_start(week).isoformat()
@@ -88,25 +86,23 @@ def import_edupage(week):
 
     data = get_timetable_data(tt_num)
 
-    # delete_week_cards(week)
+    delete_week_cards(week)
 
     # Import Subjects
     _subjects = next(table["data_rows"] for table in data if table["id"] == "subjects")
-    subjects = {[subject["id"]]: models.Subject.objects.get(short=subject["short"]) for subject in _subjects}
+    subjects = {subject["id"]: models.Subject.objects.get(short=subject["short"]) for subject in _subjects}
 
     # Import Teachers
     _teachers = next(table["data_rows"] for table in data if table["id"] == "teachers")
-    teachers = {[teacher["id"]]: models.Teacher.objects.get(short=teacher["short"]) for teacher in _teachers}
+    teachers = {teacher["id"]: models.Teacher.objects.get(short=teacher["short"]) for teacher in _teachers}
 
     # import Groups
     _groups = next(table["data_rows"] for table in data if table["id"] == "classes")
-    groups = {[group["id"]]: models.Group.objects.get(short=group["short"]) for group in _groups}
+    groups = {group["id"]: models.Group.objects.get(short=group["short"]) for group in _groups}
 
     # import Classrooms
     _classrooms = next(table["data_rows"] for table in data if table["id"] == "classrooms")
-    classrooms = {
-        [classroom["id"]]: models.Classroom.objects.get(short=classroom["short"]) for classroom in _classrooms
-    }
+    classrooms = {classroom["id"]: models.Classroom.objects.get(short=classroom["short"]) for classroom in _classrooms}
 
     # import Lessons
     _lessons = next(table["data_rows"] for table in data if table["id"] == "lessons")
