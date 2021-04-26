@@ -54,25 +54,38 @@ DAYS_MAP = {
 """returns date according to week number. 0 is monday (starts from current week's day)"""
 
 
+def get_week_start(week):
+    return datetime.strptime(f"{week}-1", "%Y-W%W-%w").date()
+
+
 def get_date_for_day(day, week: str):
-    start = datetime.strptime(f"{week}-1", "%Y-W%W-%w").date()  # starting of week's date
+    start = get_week_start(week)  # starting of week's date
     result = start + timedelta(days=DAYS_MAP[day])
     return result
 
 
 def delete_week_cards(week: str):
-    start = datetime.strptime(f"{week}-1", "%Y-W%W-%w").date()
+    start = get_week_start(week)
     end = start + timedelta(days=7)
     bookings = models.Booking.objects.filter(date__range=[start, end])
     bookings.delete()
 
 
-"""takes file and stores information into database"""
+def delete_week_cards(week: str):
+    start = get_week_start(week)
+    end = start + timedelta(days=7)
+    bookings = models.Booking.objects.filter(date__range=[start, end])
+    bookings.delete()
 
 
-def import_edupage():
+def import_edupage(week):
+    delete_week_cards(week)
+
+    # Find timetable id for given week
     timetables = get_timetables()
-    tt_num = timetables[0]["tt_num"]
+    datefrom = get_week_start(week).isoformat()
+    tt_num = next(table["tt_num"] for table in timetables if table["datefrom"] == datefrom)
+
     data = get_timetable_data(tt_num)
 
     # delete_week_cards(week)
