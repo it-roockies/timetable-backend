@@ -19,6 +19,7 @@ from authentication.authentication import TelegramBotAuthentication
 from .import_students import import_students
 from .import_timetable import import_timetable
 from .import_teacherlesson import import_teacher_lesson, import_py_teacher_subjects
+from .import_edupage import import_edupage
 from . import serializers
 from . import models
 from . import filters
@@ -272,6 +273,17 @@ class TimeTableViewSet(ViewSet):
         return Response(msg, status=status.HTTP_201_CREATED)
 
 
+class ImportEdupageViewSet(ViewSet):
+    def create(self, request):
+        week = request.data.get("week")
+
+        import_edupage(week)
+        cache.delete("last_modified")
+
+        msg = {"message": "all bookings are successfully imported from edupage"}
+        return Response(msg, status=status.HTTP_201_CREATED)
+
+
 class UserViewSet(ViewSet):
     permission_classes = (IsAdminUser,)
 
@@ -361,6 +373,7 @@ class EventViewSet(ViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class PYStudentViewSet(ViewSet):
     def create(self, request):

@@ -70,7 +70,7 @@ def delete_week_cards(week: str):
 """takes file and stores information into database"""
 
 
-def import_timetable():
+def import_edupage():
     timetables = get_timetables()
     tt_num = timetables[0]["tt_num"]
     data = get_timetable_data(tt_num)
