@@ -29,10 +29,13 @@ router.register("freeroom", booking.views.AvailableRoomViewSet, basename="free-r
 router.register("event", booking.views.EventViewSet, basename="event")
 
 # Authentication URLs
-router.register("session", authentication.views.SessionViewSet, basename="session")
-router.register("telegramuser", authentication.views.TelegramUserViewSet, basename="telegramuser")
-router.register("telegrambot", authentication.views.TelegramBotViewSet, basename="telegrambot")
-router.register("querytoken", authentication.views.TimeLimitedQueryParamTokenViewSet, basename="querytoken")
+router.register('session', authentication.views.SessionViewSet, basename='session')
+router.register('telegramuser', authentication.views.TelegramUserViewSet, basename='telegramuser')
+router.register('telegrambot', authentication.views.TelegramBotViewSet, basename='telegrambot')
+router.register('querytoken', authentication.views.TimeLimitedQueryParamTokenViewSet, basename='querytoken')
+router.register('createtotp', authentication.views.TOTPCreateView, basename='create-totp')
+router.register('confirmtotp', authentication.views.TOTPConfirmView, basename='create-totp')
+router.register('verifytotp', authentication.views.TOTPVerifyView, basename='create-totp')
 
 # Assesment URLs
 router.register("question", assessment.views.QuestionViewSet)

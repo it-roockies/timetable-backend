@@ -4,19 +4,30 @@ from cryptography.fernet import Fernet
 from datetime import datetime
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 
+from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 
+from django_otp import user_has_device
+from django_otp.plugins.otp_totp.models import TOTPDevice
+from django_otp import devices_for_user
+
 from .serializers import UserSerializer
 from .authentication import TelegramUserAuthentication, TelegramBotAuthentication
+
+def get_user_totp_device(self, user, confirmed=None):
+    devices = devices_for_user(user, confirmed=confirmed)
+    for device in devices:
+        if isinstance(device, TOTPDevice):
+            return device
 
 
 class SessionPermission(BasePermission):
@@ -46,6 +57,9 @@ class SessionViewSet(ViewSet):
         })
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        if user_has_device(user, confirmed=True):
+            msg = {'message': 'You have enabled two factor authentication.'}
+            return Response(msg)
         user_serializer = UserSerializer(user)
         token, created = Token.objects.get_or_create(user=user)
         return Response({"user": user_serializer.data, "token": token.key })
@@ -122,3 +136,52 @@ class TimeLimitedQueryParamTokenViewSet(ViewSet):
         query_param = cipher_suite.encrypt(json_str)
 
         return Response({"token": query_param})
+
+class TOTPCreateView(ViewSet):
+
+    def list(self, request):
+        user = request.user
+        device = get_user_totp_device(self, user=user)
+        if not device:
+            device = user.totpdevice_set.create(confirmed=False)
+        url = device.config_url
+        data = {'token': url}
+        return Response(data, status=201)
+
+class TOTPConfirmView(ViewSet):
+    def create(self, request):
+        user = request.user
+        token = request.data.get('token')
+        device = get_user_totp_device(self, user)
+        if not device == None and device.verify_token(token):
+            device.confirmed = True
+            device.save()
+            msg = {'success': 'Your device successfully confirmed'}
+            return Response(msg)
+        msg = {'error': 'Your token seems to be expired.'}
+        return Response(msg)
+
+
+class TOTPVerifyView(ViewSet):
+    authentication_classes = []
+    permission_classes = []
+    def create(self, request):
+        token = request.data.get('token', None)
+        username = request.data.get('username', None)
+        password = request.data.get('password', None)
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            device = get_user_totp_device(self, user)
+            if not device == None and device.verify_token(token):
+                if not device.confirmed:
+                    msg = {'error': 'You have not yet confirmed your authenticator device.'}
+                    return Response(msg)
+                user_serializer = UserSerializer(user)
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({"user": user_serializer.data, "token": token.key})
+            return Response({"error": "Token does not exist or expired."})
+        else:
+            msg = {
+                'error': 'Unable to authenticate with provided credentials'
+            }
+            return Response(msg)

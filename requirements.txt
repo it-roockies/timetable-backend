@@ -3,3 +3,4 @@ django-filter==2.4.0
 djangorestframework==3.12.2
 requests==2.25.1
 cryptography==3.4.6
+django-otp==1.0.3
