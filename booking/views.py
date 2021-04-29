@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import BasePermission, IsAdminUser, AllowAny
 from authentication.authentication import TelegramBotAuthentication
-from .import_students import import_students
+from .import_students import import_students, import_date_of_birth
 from .import_timetable import import_timetable
 from .import_teacherlesson import import_teacher_lesson, import_py_teacher_subjects
 from .import_edupage import import_edupage
@@ -299,7 +299,8 @@ class UserViewSet(ViewSet):
         """handles incoming student list"""
         csv_file = request.data.get("file")
 
-        import_students(csv_file)
+        # import_students(csv_file)
+        import_date_of_birth(csv_file)
 
         msg = {"message": "student list have successfully been stored"}
         return Response(msg, status=status.HTTP_201_CREATED)

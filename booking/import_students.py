@@ -87,6 +87,10 @@ def get_date_of_birth(raw_str):
     res = re.match(r'(^\d{1,2})\.(\d{1,2})\.(\d{1,2})$', raw_str)
     if res:
         return with_number_2(res.group(1), res.group(2), res.group(3))
+    # 2002-02-24
+    res = re.search(r'\d{1,4}-\d{1,2}-\d{1,2}', raw_str.split(' ')[0])
+    if res:
+        return raw_str[res.span()[0]:res.span()[1]]
 
     raise ValueError(f'Unknown date format {raw_str}')
 
@@ -105,6 +109,30 @@ def get_group_name(group_name):
         return ''
 
     return group_name
+
+def import_date_of_birth(csv_file):
+    if type(csv_file) == InMemoryUploadedFile:
+        csvf = StringIO(csv_file.read().decode('utf-8-sig'))
+    else:
+        csvf = StringIO(csv_file)
+    csv_reader = csv.reader(csvf, delimiter=',')
+    ctr = 0
+    for row in csv_reader:
+        if ctr == 0:
+            ctr = 1
+            continue
+        username = row[0]
+        birth_date = row[4]
+        if birth_date is not None:
+            model = get_user_model()
+            try:
+                user = model.objects.get(username=username)
+                if user.date_of_birth is None:
+                    user.date_of_birth = get_date_of_birth(birth_date)
+            except:
+                user = model.objects.create(username=username, first_name=row[2], last_name=row[1])
+                user.date_of_birth = get_date_of_birth(birth_date)
+            user.save()
 
 
 """handles incoming student list"""
