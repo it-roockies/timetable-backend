@@ -3,18 +3,22 @@ from . import models
 
 
 class TeacherAdmin(admin.ModelAdmin):
+    list_display = ("firstname", "lastname", "short")
     readonly_fields = ("teacher_id",)
 
 
 class ClassroomAdmin(admin.ModelAdmin):
+    list_display = ("name",)
     readonly_fields = ("classroom_id",)
 
 
 class SubjectAdmin(admin.ModelAdmin):
+    list_display = ("name", "short")
     readonly_fields = ("subject_id",)
 
 
 class GroupAdmin(admin.ModelAdmin):
+    list_display = ("name",)
     readonly_fields = ("group_id",)
 
 

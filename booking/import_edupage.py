@@ -78,10 +78,31 @@ def delete_week_cards(week: str):
     bookings.delete()
 
 
+def get_subjects_or_ignore(_subjects):
+    subjects = {}
+    for _subject in _subjects:
+        try:
+            subjects[_subject["id"]] = models.Subject.objects.get(short=_subject["short"])
+        except (models.Subject.DoesNotExist, models.Subject.MultipleObjectsReturned):
+            print(f'Subject with short {_subject["short"]} not found')
+    return subjects
+
+
+def get_teachers(_teachers):
+    teachers = {}
+    for _teacher in _teachers:
+        try:
+            teachers[_teacher["id"]] = models.Teacher.objects.get(short=_teacher["short"])
+        except (models.Teacher.DoesNotExist, models.Teacher.MultipleObjectsReturned):
+            print(f'Subject with short {_teacher["short"]} not found')
+    return teachers
+
+
 def import_edupage(week):
     # Find timetable id for given week
     timetables = get_timetables()
     datefrom = get_week_start(week).isoformat()
+
     tt_num = next(table["tt_num"] for table in timetables if table["datefrom"] == datefrom)
 
     data = get_timetable_data(tt_num)
@@ -90,19 +111,19 @@ def import_edupage(week):
 
     # Import Subjects
     _subjects = next(table["data_rows"] for table in data if table["id"] == "subjects")
-    subjects = {subject["id"]: models.Subject.objects.get(short=subject["short"]) for subject in _subjects}
+    subjects = get_subjects_or_ignore(_subjects)
 
     # Import Teachers
     _teachers = next(table["data_rows"] for table in data if table["id"] == "teachers")
-    teachers = {teacher["id"]: models.Teacher.objects.get(short=teacher["short"]) for teacher in _teachers}
+    teachers = get_teachers(_teachers)
 
     # import Groups
     _groups = next(table["data_rows"] for table in data if table["id"] == "classes")
-    groups = {group["id"]: models.Group.objects.get(short=group["short"]) for group in _groups}
+    groups = {group["id"]: models.Group.objects.get(name=group["name"]) for group in _groups}
 
     # import Classrooms
     _classrooms = next(table["data_rows"] for table in data if table["id"] == "classrooms")
-    classrooms = {classroom["id"]: models.Classroom.objects.get(short=classroom["short"]) for classroom in _classrooms}
+    classrooms = {classroom["id"]: models.Classroom.objects.get(name=classroom["name"]) for classroom in _classrooms}
 
     # import Lessons
     _lessons = next(table["data_rows"] for table in data if table["id"] == "lessons")
