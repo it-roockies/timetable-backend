@@ -6,21 +6,11 @@ from django.contrib.auth import get_user_model, authenticate
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = [
-            'id',
-            'username',
-            'telegram_id',
-            'first_name',
-            'last_name',
-            'date_of_birth',
-            'group'
-        ]
-
+        fields = ["id", "username", "telegram_id", "first_name", "last_name", "date_of_birth", "group"]
 
     def create(self, validated_data):
         """creates and saves a user"""
         return get_user_model().objects.create_user(**validated_data)
-
 
 
 # class AuthTokenSerializer(serializers.Serializer):
@@ -47,62 +37,48 @@ class UserSerializer(serializers.ModelSerializer):
 #
 #         return attrs
 
+
 class MessageSerializer(serializers.ModelSerializer):
     """serializer for question model"""
+
     class Meta:
         model = models.Message
-        fields = [
-            'message_id',
-            'text'
-        ]
+        fields = ["message_id", "text"]
 
 
 class Classroom(serializers.ModelSerializer):
-
     class Meta:
         model = models.Classroom
-        fields = [
-            'id',
-            'name'
-        ]
+        fields = ["id", "name"]
+
 
 class LessonSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.Lesson
-        fields = [
-            'id',
-            'groups',
-            'teachers',
-            'subject'
-        ]
+        fields = ["id", "groups", "teachers", "subject"]
+
 
 class ClassroomSerializer(serializers.ModelSerializer):
     """Interacts with Room data"""
+
     class Meta:
         model = models.Classroom
         fields = [
-            'id',
-            'name',
+            "id",
+            "name",
         ]
+
 
 class BookingSerializer(serializers.ModelSerializer):
     """A serializer that helps us to serializer booking data """
+
     teachers = serializers.SerializerMethodField()
     groups = serializers.SerializerMethodField()
-    subject = serializers.IntegerField(source='lesson.subject_id')
+    subject = serializers.IntegerField(source="lesson.subject_id")
 
     class Meta:
         model = models.Booking
-        fields = [
-            'id',
-            'date',
-            'period',
-            'teachers',
-            'groups',
-            'subject',
-            'classroom'
-        ]
+        fields = ["id", "date", "period", "teachers", "groups", "subject", "classroom"]
 
     def get_teachers(self, obj):
         return [teacher.id for teacher in obj.lesson.teachers.all()]
@@ -110,42 +86,37 @@ class BookingSerializer(serializers.ModelSerializer):
     def get_groups(self, obj):
         return [group.id for group in obj.lesson.groups.all()]
 
+
 class TeacherSerializer(serializers.ModelSerializer):
     """Interacts with Tutor data"""
+
     class Meta:
         model = models.Teacher
-        fields = [
-            'id',
-            'firstname',
-            'lastname',
-            'short',
-            'color'
-        ]
+        fields = ["id", "firstname", "lastname", "short", "color"]
 
 
 class SubjectSerializer(serializers.ModelSerializer):
     """Interacts with Module data"""
+
     class Meta:
         model = models.Subject
-        fields = [
-            'id',
-            'name',
-            'short'
-        ]
+        fields = ["id", "name", "short", "link"]
+
 
 class GroupSerializer(serializers.ModelSerializer):
     """Interacts with Group data"""
+
     class Meta:
         model = models.Group
         fields = [
-            'id',
-            'name',
+            "id",
+            "name",
         ]
+
+
 class EventSerializer(serializers.ModelSerializer):
     """Interacts with Event data"""
+
     class Meta:
         model = models.Event
-        fields = [
-            'name',
-            'special'
-        ]
+        fields = ["name", "special"]

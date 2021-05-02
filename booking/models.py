@@ -30,11 +30,12 @@ from django.utils import timezone
 
 class User(AbstractUser):
     """Just customizing default django's user."""
+
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     telegram_id = models.CharField(max_length=255, unique=True, blank=True, null=True)
     date_of_birth = models.DateField(max_length=255, blank=True, null=True)
-    group = models.ForeignKey('Group', on_delete=models.CASCADE, null=True, blank=True)
+    group = models.ForeignKey("Group", on_delete=models.CASCADE, null=True, blank=True)
     attended_questionnaire = models.IntegerField(default=0)
 
     def __str__(self):
@@ -64,6 +65,7 @@ class Subject(models.Model):
     subject_id = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     short = models.CharField(max_length=255, blank=True, null=True)
+    link = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         """returns module name"""
@@ -79,14 +81,16 @@ class Teacher(models.Model):
 
     def __str__(self):
         """returns professors full name"""
-        full_name = self.firstname + ' ' + self.lastname
+        full_name = self.firstname + " " + self.lastname
         return full_name
+
 
 class TeacherSubject(models.Model):
     level = models.IntegerField(blank=True, null=True)
     term = models.IntegerField(blank=True, null=True)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, blank=True, null=True)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+
 
 class Classroom(models.Model):
     classroom_id = models.CharField(max_length=255, unique=True)
@@ -100,11 +104,12 @@ class Classroom(models.Model):
         """returns title of the room"""
         return self.name
 
+
 class Lesson(models.Model):
     lesson_id = models.CharField(max_length=255, unique=True)
     groups = models.ManyToManyField(Group)
     teachers = models.ManyToManyField(Teacher)
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, default='subject')
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, default="subject")
 
     def __str__(self):
         return f"{self.subject} ({self.teachers})"
@@ -133,19 +138,16 @@ class EventMember(models.Model):
 
 class Booking(models.Model):
     period_of_lesson = [
-        ("1", '9:00-10:00'),
-        ("2", '10:20-11:20'),
-        ("3", '12:00-13:00'),
-        ("4", '13:20-14:20'),
-        ("5", '14:40-15:40'),
-        ("6", '16:00-17:00')
+        ("1", "9:00-10:00"),
+        ("2", "10:20-11:20"),
+        ("3", "12:00-13:00"),
+        ("4", "13:20-14:20"),
+        ("5", "14:40-15:40"),
+        ("6", "16:00-17:00"),
     ]
 
-
-
-
     date = models.DateField()
-    period = models.CharField(max_length=1, choices=period_of_lesson, default='1')
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, default='lesson', blank=True, null=True)
+    period = models.CharField(max_length=1, choices=period_of_lesson, default="1")
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, default="lesson", blank=True, null=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE, blank=True, null=True)
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, blank=True, null=True)
