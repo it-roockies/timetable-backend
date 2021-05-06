@@ -78,6 +78,8 @@ class Teacher(models.Model):
     lastname = models.CharField(max_length=255)
     short = models.CharField(max_length=255, blank=True, null=True)
     color = models.CharField(max_length=255, blank=True, null=True)
+    lesson_link = models.TextField(blank=True, null=True, unique=True)
+    meeting_credentials = models.JSONField(blank=True, null=True)
 
     def __str__(self):
         """returns professors full name"""
@@ -91,6 +93,12 @@ class TeacherSubject(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, blank=True, null=True)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
 
+
+
+    def __str__(self):
+        """returns professors full name"""
+        full_name = self.teacher.firstname + ' ' + self.teacher.lastname
+        return full_name
 
 class Classroom(models.Model):
     classroom_id = models.CharField(max_length=255, unique=True)
