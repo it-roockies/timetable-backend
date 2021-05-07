@@ -44,7 +44,7 @@ class User(AbstractUser):
 
 class Message(models.Model):
     message_id = models.CharField(max_length=255, unique=True)
-    text = models.CharField(max_length=255)
+    text = models.TextField()
 
     def __str__(self):
         return self.message_id
@@ -118,9 +118,11 @@ class Lesson(models.Model):
     groups = models.ManyToManyField(Group)
     teachers = models.ManyToManyField(Teacher)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE, default="subject")
+    link = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f"{self.subject} ({self.teachers})"
+        teachers = [str(t) for t in self.teachers.all()]
+        return f"{self.subject} ({', '.join(teachers)})"
 
 
 class Event(models.Model):
